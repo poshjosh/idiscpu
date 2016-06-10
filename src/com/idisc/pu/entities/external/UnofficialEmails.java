@@ -13,25 +13,6 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @Entity
 @Table(name="unofficial_emails")
 @XmlRootElement
@@ -117,6 +98,7 @@ public class UnofficialEmails
     this.extraDetails = extraDetails;
   }
   
+  @Override
   public int hashCode()
   {
     int hash = 0;
@@ -125,6 +107,7 @@ public class UnofficialEmails
   }
   
 
+  @Override
   public boolean equals(Object object)
   {
     if (!(object instanceof UnofficialEmails)) {
@@ -137,6 +120,7 @@ public class UnofficialEmails
     return true;
   }
   
+  @Override
   public String toString()
   {
     return "com.idiscweb.UnofficialEmails[ emailAddress=" + this.emailAddress + " ]";

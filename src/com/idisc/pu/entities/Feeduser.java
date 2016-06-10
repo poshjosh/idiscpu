@@ -291,6 +291,7 @@ public class Feeduser
     this.installationList = installationList;
   }
   
+  @Override
   public int hashCode()
   {
     int hash = 0;
@@ -299,6 +300,7 @@ public class Feeduser
   }
   
 
+  @Override
   public boolean equals(Object object)
   {
     if (!(object instanceof Feeduser)) {
@@ -311,6 +313,7 @@ public class Feeduser
     return true;
   }
   
+  @Override
   public String toString()
   {
     return "com.idisc.pu.entities.Feeduser[ feeduserid=" + this.feeduserid + " ]";

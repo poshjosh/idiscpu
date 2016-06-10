@@ -11,7 +11,6 @@
     <class>com.idisc.pu.entities.Site</class>
     <class>com.idisc.pu.entities.Country</class>
     <class>com.idisc.pu.entities.Emailstatus</class>
-    <class>com.idisc.pu.entities.Usersitehitcount</class>
     <class>com.idisc.pu.entities.Sitetype</class>
     <class>com.idisc.pu.entities.Extractedemail</class>
     <class>com.idisc.pu.entities.Feedhit</class>
@@ -50,8 +49,8 @@
       <property name="eclipselink.jdbc.cache-statements" value="true"/>
       <!--property name="eclipselink.jdbc.batch-writing" value="JDBC"/--> 
       <!--property name="eclipselink.jdbc.batch-writing.size" value="1000"/-->      
-      <!--property name="eclipselink.logging.level.sql" value="FINE"/-->
-      <!--property name="eclipselink.logging.parameters" value="true"/-->
+      <property name="eclipselink.logging.level.sql" value="FINER"/>
+      <property name="eclipselink.logging.parameters" value="true"/>
       <!--property name="eclipselink.persistencexml" value="META-INF/persistence_remote.xml"/-->      
     </properties>
   </persistence-unit>

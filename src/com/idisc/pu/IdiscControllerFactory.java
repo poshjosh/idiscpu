@@ -3,28 +3,15 @@ package com.idisc.pu;
 import com.bc.jpa.ControllerFactory;
 import com.bc.jpa.DefaultControllerFactory;
 import com.bc.jpa.ParametersFormatter;
-import com.bc.jpa.PersistenceMetaData;
 import com.bc.jpa.fk.EnumReferences;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import com.bc.jpa.PersistenceMetaData;
 
-
-
-
-
-
-
-
-
-
-
-public class IdiscControllerFactory
-  extends DefaultControllerFactory
-{
-  public IdiscControllerFactory()
-    throws IOException
-  {
+public class IdiscControllerFactory extends DefaultControllerFactory{
+    
+  public IdiscControllerFactory() throws IOException {
     init();
   }
   

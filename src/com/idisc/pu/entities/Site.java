@@ -70,8 +70,6 @@ public class Site
   @JoinColumn(name="sitetypeid", referencedColumnName="sitetypeid")
   @ManyToOne(optional=false)
   private Sitetype sitetypeid;
-  @OneToMany(cascade={javax.persistence.CascadeType.ALL}, mappedBy="site")
-  private List<Usersitehitcount> usersitehitcountList;
   
   public Site() {}
   
@@ -161,15 +159,7 @@ public class Site
     this.sitetypeid = sitetypeid;
   }
   
-  @XmlTransient
-  public List<Usersitehitcount> getUsersitehitcountList() {
-    return this.usersitehitcountList;
-  }
-  
-  public void setUsersitehitcountList(List<Usersitehitcount> usersitehitcountList) {
-    this.usersitehitcountList = usersitehitcountList;
-  }
-  
+  @Override
   public int hashCode()
   {
     int hash = 0;
@@ -177,7 +167,7 @@ public class Site
     return hash;
   }
   
-
+  @Override
   public boolean equals(Object object)
   {
     if (!(object instanceof Site)) {
@@ -190,6 +180,7 @@ public class Site
     return true;
   }
   
+  @Override
   public String toString()
   {
     return "com.idisc.pu.entities.Site[ siteid=" + this.siteid + " ]";

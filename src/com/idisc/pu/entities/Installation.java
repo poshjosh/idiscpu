@@ -90,8 +90,6 @@ public class Installation
   private List<Feedhit> feedhitList;
   @OneToMany(cascade={javax.persistence.CascadeType.ALL}, mappedBy="installationid")
   private List<Extractedemail> extractedemailList;
-  @OneToMany(cascade={javax.persistence.CascadeType.ALL}, mappedBy="installation")
-  private List<Usersitehitcount> usersitehitcountList;
   @JoinColumn(name="feeduserid", referencedColumnName="feeduserid")
   @ManyToOne
   private Feeduser feeduserid;
@@ -229,15 +227,6 @@ public class Installation
   
   public void setExtractedemailList(List<Extractedemail> extractedemailList) {
     this.extractedemailList = extractedemailList;
-  }
-  
-  @XmlTransient
-  public List<Usersitehitcount> getUsersitehitcountList() {
-    return this.usersitehitcountList;
-  }
-  
-  public void setUsersitehitcountList(List<Usersitehitcount> usersitehitcountList) {
-    this.usersitehitcountList = usersitehitcountList;
   }
   
   public Feeduser getFeeduserid() {
