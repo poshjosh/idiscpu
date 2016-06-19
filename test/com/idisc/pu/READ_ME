@@ -1,0 +1,29 @@
+bug001_mysql_databaseurl
+========================
+Bug description
+---------------
+Some MySQL driver versions has issues while making database connections if 
+the URL contains sessionVariables or characterEncoding.
+
+Work around
+------------
+Remove sessionVariables or characterEncoding from URL. 
+Also update to MySQL driver URL may fix the issue.
+
+Notes
+-----
+This bug was observed under the following:
+MySQL version 5.6.30 
+MySQL jdbc driver version 5.1.23
+
+See also
+--------
+http://technogeekatwork.blogspot.com.ng/2012/04/mysql-driver-5116-517.html
+
+Sample stacktrace
+-----------------
+java.lang.NullPointerException
+	at com.mysql.jdbc.ConnectionImpl.getServerCharacterEncoding(ConnectionImpl.java:3243)
+	at com.mysql.jdbc.PreparedStatement.setInternal(PreparedStatement.java:3834)
+	at com.mysql.jdbc.PreparedStatement.setInt(PreparedStatement.java:3784)
+	at org.eclipse.persistence.internal.databaseaccess.DatabasePlatform.setParameterValueInDatabaseCall(DatabasePlatform.java:2446)

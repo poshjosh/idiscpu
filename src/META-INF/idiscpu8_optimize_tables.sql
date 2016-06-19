@@ -1,0 +1,15 @@
+OPTIMIZE TABLE `archivedfeed`;
+OPTIMIZE TABLE `bookmarkfeed`;
+OPTIMIZE TABLE `comment`;
+OPTIMIZE TABLE `country`;
+OPTIMIZE TABLE `emailstatus`;
+OPTIMIZE TABLE `extractedemail`;
+OPTIMIZE TABLE `favoritefeed`;
+OPTIMIZE TABLE `feed`;
+OPTIMIZE TABLE `feedhit`;
+OPTIMIZE TABLE `feeduser`;
+OPTIMIZE TABLE `gender`;
+OPTIMIZE TABLE `howdidyoufindus`;
+OPTIMIZE TABLE `installation`;
+OPTIMIZE TABLE `site`;
+OPTIMIZE TABLE `sitetype`;
