@@ -15,8 +15,15 @@ ALTER TABLE `feedhit` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_5
 ALTER TABLE `feeduser` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
 ALTER TABLE `gender` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
 ALTER TABLE `howdidyoufindus` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
+
+# For each index, 255 3-bit chars (under utf8) becomes 191 4-bit chars (under utf8mb4)
+ALTER TABLE `installation` MODIFY COLUMN `installationkey` VARCHAR(191) NOT NULL UNIQUE;
 ALTER TABLE `installation` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
+
+# For each index, 255 3-bit chars (under utf8) becomes 191 4-bit chars (under utf8mb4)
+ALTER TABLE `site` MODIFY COLUMN `site` VARCHAR(191) NOT NULL UNIQUE;
 ALTER TABLE `site` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
+
 ALTER TABLE `sitetype` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
 
 # For each column:
@@ -72,18 +79,12 @@ ALTER TABLE `gender` CHANGE `gender` `gender` VARCHAR(6) NOT NULL CHARACTER SET 
 
 ALTER TABLE `howdidyoufindus` CHANGE `howdidyoufindus` `howdidyoufindus` VARCHAR(40) NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
 
---Table installation wanted complained that it required more than 767 bytes https://mathiasbynens.be/notes/mysql-utf8mb4
-/** From here didn't work 
-ALTER TABLE `installation` CHANGE `installationkey` `installationkey` VARCHAR(255) NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
+ALTER TABLE `installation` CHANGE `installationkey` `installationkey` VARCHAR(191) NOT NULL UNIQUE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
 ALTER TABLE `installation` CHANGE `screenname` `screenname` VARCHAR(100) NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
 ALTER TABLE `installation` CHANGE `extradetails` `extradetails` VARCHAR(500) NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
-*/
 
---These ones also complained
-/**
-ALTER TABLE `site` CHANGE `site` `site` VARCHAR(255) NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
+ALTER TABLE `site` CHANGE `site` `site` VARCHAR(191) NOT NULL UNIQUE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
 ALTER TABLE `site` CHANGE `iconurl` `iconurl` VARCHAR(500) NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
 ALTER TABLE `site` CHANGE `extradetails` `extradetails` VARCHAR(500) NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
 
 ALTER TABLE `sitetype` CHANGE `sitetype` `sitetype` VARCHAR(10) NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
-*/

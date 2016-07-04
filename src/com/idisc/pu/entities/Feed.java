@@ -20,24 +20,6 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @Entity
 @Table(name="feed")
 @XmlRootElement

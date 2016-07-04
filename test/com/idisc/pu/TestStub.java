@@ -1,7 +1,6 @@
 package com.idisc.pu;
 
 import com.idisc.pu.entities.Feed;
-import com.bc.jpa.ControllerFactory;
 import com.bc.jpa.EntityController;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import com.bc.jpa.JpaContext;
 
 
 /**
@@ -27,25 +27,25 @@ import java.util.Map;
  */
 public class TestStub {
     
-    private ControllerFactory factory;
+    private JpaContext jpaContext;
     
     public boolean isRemote() {
         return false;
     }
     
-    public ControllerFactory getControllerFactory() {
-        if(factory == null) {
+    public JpaContext getJpaContext() {
+        if(jpaContext == null) {
             try{
-                factory = new IdiscControllerFactory();
+                jpaContext = new IdiscJpaContext();
             }catch(IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        return factory;
+        return jpaContext;
     }
     
     public EntityController getEntityController(Class aClass) {
-        return this.getControllerFactory().getEntityController(aClass);
+        return this.getJpaContext().getEntityController(aClass);
     }
     
     public Class getDefaultEntityClass() {

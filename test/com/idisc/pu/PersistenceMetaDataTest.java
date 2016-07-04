@@ -1,7 +1,6 @@
 package com.idisc.pu;
 
 import com.idisc.pu.entities.Feed;
-import com.bc.jpa.ControllerFactory;
 import com.idisc.pu.entities.Emailstatus;
 import java.io.IOException;
 import java.util.Map;
@@ -9,6 +8,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import com.bc.jpa.PersistenceMetaData;
+import com.bc.jpa.JpaContext;
 
 
 /**
@@ -26,15 +26,15 @@ import com.bc.jpa.PersistenceMetaData;
  */
 public class PersistenceMetaDataTest extends TestStub {
     
-    private final ControllerFactory factory;
+    private final JpaContext jpaContext;
     
     private final PersistenceMetaData metaData;
     
     public PersistenceMetaDataTest() throws IOException { 
-        this.factory = new IdiscControllerFactory();
-        this.metaData = factory.getMetaData();
-        factory.getEntityManager(Feed.class);
-        factory.getEntityManager(Emailstatus.class);
+        this.jpaContext = new IdiscJpaContext();
+        this.metaData = jpaContext.getMetaData();
+        jpaContext.getEntityManager(Feed.class);
+        jpaContext.getEntityManager(Emailstatus.class);
     }
 
     @BeforeClass
@@ -109,7 +109,7 @@ System.out.println();
             
             if(crossRefColumn != null && crossRefColumn.equals(references.get(col))) {
 
-                ref = factory.getEntityManager(refType).getReference(refType, val);
+                ref = jpaContext.getEntityManager(refType).getReference(refType, val);
 
                 if(ref == null) {
                     throw new NullPointerException();
@@ -148,7 +148,7 @@ System.out.println();
         
         if(crossRefColumn != null) {
 
-            ref = factory.getEntityManager(refType).getReference(refType, val);
+            ref = jpaContext.getEntityManager(refType).getReference(refType, val);
 
             if(ref == null) {
                 throw new NullPointerException();
