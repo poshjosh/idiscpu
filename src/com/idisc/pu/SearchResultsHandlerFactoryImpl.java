@@ -1,6 +1,5 @@
 package com.idisc.pu;
 
-import com.bc.jpa.query.QueryBuilder;
 import com.bc.jpa.search.BaseSearchResults;
 import com.bc.jpa.search.SearchResults;
 import com.idisc.pu.entities.Comment;
@@ -14,25 +13,26 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import com.bc.jpa.JpaContext;
+import com.bc.jpa.dao.BuilderForSelect;
 
 /**
  * @author Josh
  */
-public class SearchHandlerFactoryImpl implements SearchHandlerFactory {
+public class SearchResultsHandlerFactoryImpl implements SearchResultsHandlerFactory {
     
     // we use the same cacheSize for both type cache and session cache
     private final int cacheSize;
     
     private final Lock lock;
     
-    private final JpaContext cf;
+    private final JpaContext jpaContext;
     
     private final Map<Class, Map<String, SearchResults>> typeCache;
     
-    public SearchHandlerFactoryImpl(JpaContext cf) {
+    public SearchResultsHandlerFactoryImpl(JpaContext cf) {
         this.cacheSize = 8;
         this.lock = new ReentrantLock();
-        this.cf = cf;
+        this.jpaContext = cf;
         this.typeCache = Collections.synchronizedMap(new HashMapNoNulls(cacheSize, 0.75f));
     }
     
@@ -175,28 +175,29 @@ public class SearchHandlerFactoryImpl implements SearchHandlerFactory {
         Integer limit = parameters == null || parameters.get("limit") == null ? 20 : (Integer)parameters.get("limit");
         Date after = parameters == null ? null : (Date)parameters.get("after");
         
-        QueryBuilder queryBuilder = this.createQueryBuilder(entityType, query, after, 0, limit);
+        BuilderForSelect select = this.createSelect(entityType, query, after, 0, limit);
         
-        return new BaseSearchResults(queryBuilder, limit, true);
+        return new BaseSearchResults(select, limit, true);
     } 
 
-    protected <E> QueryBuilder<E> createQueryBuilder(Class<E> resultType, String query, Date after, int offset, int limit) {
-        QueryBuilder queryBuilder;
+    protected <E> BuilderForSelect<E> createSelect(Class<E> resultType, String query, Date after, int offset, int limit) {
+        final BuilderForSelect select;
         final String dateColumn;
         if(resultType == Feed.class) {
-            queryBuilder = new FeedQuery(cf, offset, limit, query);
+            select = new FeedQuery(jpaContext, offset, limit, query);
             dateColumn = "feeddate";
         }else if(resultType == Comment.class) {
-            queryBuilder = new CommentQuery(cf, offset, limit, query);
+            select = new CommentQuery(jpaContext, offset, limit, query);
             dateColumn = "datecreated";
         }else{
-            queryBuilder = new Query(cf, resultType, offset, limit, query);
+            select = new Search(jpaContext, resultType, offset, limit, query);
             dateColumn = null;
         }
+        
         if(after != null && dateColumn != null) {
-            queryBuilder.where(resultType, dateColumn, QueryBuilder.GREATER_THAN, after);
+            select.where(resultType, dateColumn, BuilderForSelect.GREATER_THAN, after);
         }
-        return queryBuilder;
+        return select;
     }
 
     private class HashMapNoNulls<K, V> extends HashMap<K, V> {

@@ -1,0 +1,1 @@
+ALTER TABLE `loosebox_idisc`.comment DROP COLUMN `dateusernotified`;

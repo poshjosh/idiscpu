@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.idisc.pu;
 
-import com.bc.jpa.query.QueryBuilderImpl;
+import com.bc.jpa.dao.BuilderForSelectImpl;
 import javax.persistence.TypedQuery;
 import com.bc.jpa.JpaContext;
 
@@ -13,23 +8,27 @@ import com.bc.jpa.JpaContext;
  *
  * @author Josh
  */
-public class Query<R> extends QueryBuilderImpl<R> {
+public class Search<R> extends BuilderForSelectImpl<R> {
 
     private final int offset;
     
     private final int limit;
 
-    public Query(JpaContext cf, Class<R> resultType, String query, String... cols) {
+    public Search(JpaContext cf, Class<R> resultType, String query, String... cols) {
         this(cf, resultType, -1, -1, query, cols);
     }
     
-    public Query(JpaContext cf, Class<R> resultType, int offset, int limit, String query, String... cols) {
+    public Search(JpaContext cf, Class<R> resultType, int offset, int limit, String query, String... cols) {
         
         super(cf.getEntityManager(resultType), resultType, cf.getDatabaseFormat());
         
+        Search.this.from(resultType);
+        
+        Search.this.descOrder(cf.getMetaData().getIdColumnName(resultType));
+        
         if(query != null) {
         
-            Query.this.search(query, cols);
+            Search.this.search(query, cols);
         }
         
         this.offset = offset;

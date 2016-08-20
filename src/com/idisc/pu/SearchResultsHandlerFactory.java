@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @author Josh
  */
-public interface SearchHandlerFactory extends AutoCloseable {
+public interface SearchResultsHandlerFactory extends AutoCloseable {
 
     Iterator<Class> getEntityTypes();
     
