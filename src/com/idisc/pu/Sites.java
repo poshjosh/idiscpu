@@ -24,7 +24,9 @@ public class Sites {
     Site output;   
     
     try(BuilderForSelect<Site> qb = jpaContext.getBuilderForSelect(Site.class)) {
+      
       qb.from(Site.class);
+      
       if (siteName != null) {
         qb.where(Site_.site.getName(), siteName);
       }
@@ -43,7 +45,7 @@ public class Sites {
           output.setSite(siteName);
           output.setSitetypeid(sitetype);
         
-          qb.getEntityManager().persist(output);
+          qb.persist(output).commit();
           
         }else{
             

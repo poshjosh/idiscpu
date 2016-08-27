@@ -1,19 +1,17 @@
 package com.idisc.pu;
 
-import com.bc.jpa.search.BaseSearchResults;
 import com.bc.jpa.search.SearchResults;
-import com.idisc.pu.entities.Comment;
-import com.idisc.pu.entities.Feed;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import com.bc.jpa.JpaContext;
-import com.bc.jpa.dao.BuilderForSelect;
+import com.bc.jpa.dao.SelectDao;
+import com.bc.jpa.search.BaseSearchResults;
+import com.bc.util.XLogger;
+import java.util.logging.Level;
 
 /**
  * @author Josh
@@ -25,14 +23,11 @@ public class SearchResultsHandlerFactoryImpl implements SearchResultsHandlerFact
     
     private final Lock lock;
     
-    private final JpaContext jpaContext;
-    
     private final Map<Class, Map<String, SearchResults>> typeCache;
     
-    public SearchResultsHandlerFactoryImpl(JpaContext cf) {
+    public SearchResultsHandlerFactoryImpl() {
         this.cacheSize = 8;
         this.lock = new ReentrantLock();
-        this.jpaContext = cf;
         this.typeCache = Collections.synchronizedMap(new HashMapNoNulls(cacheSize, 0.75f));
     }
     
@@ -90,7 +85,7 @@ public class SearchResultsHandlerFactoryImpl implements SearchResultsHandlerFact
             Map<String, SearchResults> sessionCache = typeCache.get(entityType);
             SearchResults<E> output = sessionCache == null ? null : sessionCache.remove(sessionId);
             if(output != null && close) {
-                output.close();
+                this.close(output);
             }
             return output;
         }finally{
@@ -99,21 +94,16 @@ public class SearchResultsHandlerFactoryImpl implements SearchResultsHandlerFact
     }
     
     @Override
-    public <E> SearchResults<E> get(String sessionId, Class<E> entityType, boolean createNew) {
+    public <E> SearchResults<E> get(String sessionId, SelectDao<E> dao, boolean createNew) {
         
-        return this.get(sessionId, entityType, Collections.EMPTY_MAP, createNew);
-    }
-
-    @Override
-    public <E> SearchResults<E> get(String sessionId, Class<E> entityType, 
-            Map<String, Object> parameters, boolean createNew) {
+        final Class<E> entityType = dao.getResultType();
 
         SearchResults output = null;
 
         try{
             
             lock.lock();
-
+            
             Map<String, SearchResults> sessionCache = typeCache.get(entityType);
 
             if(sessionCache != null) {
@@ -125,10 +115,10 @@ public class SearchResultsHandlerFactoryImpl implements SearchResultsHandlerFact
 
                 if(output != null) {
 
-                    output.close();
+                    this.close(output);
                 }
 
-                output = this.create(entityType, parameters);
+                output = new BaseSearchResults(dao);
 
                 if(sessionCache == null) {
 
@@ -145,6 +135,17 @@ public class SearchResultsHandlerFactoryImpl implements SearchResultsHandlerFact
         }
         
         return output;
+    }
+    
+    @Override
+    public <E> SearchResults<E> get(String sessionId, Class<E> entityType, SearchResults<E> outputIfNone) {
+        try{
+            lock.lock();
+            Map<String, SearchResults> sessionCache = typeCache.get(entityType);
+            return sessionCache == null ? outputIfNone : sessionCache.get(sessionId);
+        }finally{
+            lock.unlock();
+        }
     }
     
     @Override
@@ -169,35 +170,14 @@ public class SearchResultsHandlerFactoryImpl implements SearchResultsHandlerFact
         }
     }
 
-    protected <E> SearchResults<E> create(Class<E> entityType, Map<String, Object> parameters) {
-        
-        String query = parameters == null ? null : (String)parameters.get("query");
-        Integer limit = parameters == null || parameters.get("limit") == null ? 20 : (Integer)parameters.get("limit");
-        Date after = parameters == null ? null : (Date)parameters.get("after");
-        
-        BuilderForSelect select = this.createSelect(entityType, query, after, 0, limit);
-        
-        return new BaseSearchResults(select, limit, true);
-    } 
-
-    protected <E> BuilderForSelect<E> createSelect(Class<E> resultType, String query, Date after, int offset, int limit) {
-        final BuilderForSelect select;
-        final String dateColumn;
-        if(resultType == Feed.class) {
-            select = new FeedQuery(jpaContext, offset, limit, query);
-            dateColumn = "feeddate";
-        }else if(resultType == Comment.class) {
-            select = new CommentQuery(jpaContext, offset, limit, query);
-            dateColumn = "datecreated";
-        }else{
-            select = new Search(jpaContext, resultType, offset, limit, query);
-            dateColumn = null;
+    private void close(SearchResults sr) {
+        if(sr instanceof AutoCloseable) {
+            try{
+                ((AutoCloseable)sr).close();
+            }catch(Exception e) {
+                XLogger.getInstance().log(Level.WARNING, "Exception closing "+sr.getClass().getName(), this.getClass(), e);
+            }
         }
-        
-        if(after != null && dateColumn != null) {
-            select.where(resultType, dateColumn, BuilderForSelect.GREATER_THAN, after);
-        }
-        return select;
     }
 
     private class HashMapNoNulls<K, V> extends HashMap<K, V> {

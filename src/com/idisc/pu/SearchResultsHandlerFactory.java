@@ -1,8 +1,8 @@
 package com.idisc.pu;
 
+import com.bc.jpa.dao.SelectDao;
 import com.bc.jpa.search.SearchResults;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
  * @author Josh
@@ -13,9 +13,9 @@ public interface SearchResultsHandlerFactory extends AutoCloseable {
     
     Iterator<String> getKeys(Class entityType);
     
-    <E> SearchResults<E> get(String sessionId, Class<E> entityType, boolean createNew);
+    <E> SearchResults<E> get(String sessionId, Class<E> entityType, SearchResults<E> outputIfNone);
     
-    <E> SearchResults<E> get(String sessionId, Class<E> entityType, Map<String, Object> parameters, boolean createNew);
+    <E> SearchResults<E> get(String sessionId, SelectDao<E> dao, boolean createNew);
 
     int removeAll(boolean close);
     
