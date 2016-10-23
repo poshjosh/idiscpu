@@ -7,8 +7,8 @@ import java.util.Map;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.bc.jpa.PersistenceMetaData;
 import com.bc.jpa.JpaContext;
+import com.bc.jpa.JpaMetaData;
 
 
 /**
@@ -28,7 +28,7 @@ public class PersistenceMetaDataTest extends TestStub {
     
     private final JpaContext jpaContext;
     
-    private final PersistenceMetaData metaData;
+    private final JpaMetaData metaData;
     
     public PersistenceMetaDataTest() throws IOException { 
         this.jpaContext = new IdiscJpaContext();
@@ -163,7 +163,7 @@ System.out.println();
     }
     
     /**
-     * Test of getEntityClass method, of class PersistenceMetaData.
+     * Test of getEntityClass method, of class JpaMetaData.
      */
 //    @Test
     public void testAll() throws Exception {
@@ -186,7 +186,7 @@ long mB4 = Runtime.getRuntime().freeMemory();
 System.out.println("TOTAL, Time: "+(System.currentTimeMillis()-tB4)+", Memory: "+(mB4-Runtime.getRuntime().freeMemory()));
     }
     
-    private void test(PersistenceMetaData metaData, Class aClass) throws IOException {
+    private void test(JpaMetaData metaData, Class aClass) throws IOException {
 
         try{
 

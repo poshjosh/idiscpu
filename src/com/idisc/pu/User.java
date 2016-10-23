@@ -1,10 +1,12 @@
 package com.idisc.pu;
 
-import com.idisc.pu.entities.Country;
 import com.idisc.pu.entities.Feeduser;
 import com.idisc.pu.entities.Gender;
 import com.idisc.pu.entities.Howdidyoufindus;
+import com.idisc.pu.entities.Installation;
+import com.idisc.pu.entities.Localaddress;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -145,83 +147,43 @@ public class User extends Feeduser {
     this.delegate.setPhoneNumber2(phoneNumber2);
   }
   
-  public String getFax()
-  {
+  @Override
+  public String getFax() {
     return this.delegate.getFax();
   }
   
-  public void setFax(String fax)
-  {
+  @Override
+  public void setFax(String fax){
     this.delegate.setFax(fax);
   }
   
-  public String getStateOrRegion()
-  {
-    return this.delegate.getStateOrRegion();
+  @Override
+  public Localaddress getLocaladdressid(){
+    return this.delegate.getLocaladdressid();
   }
   
-  public void setStateOrRegion(String stateOrRegion)
-  {
-    this.delegate.setStateOrRegion(stateOrRegion);
+  @Override
+  public void setLocaladdressid(Localaddress localaddressid) {
+    this.delegate.setLocaladdressid(localaddressid);
   }
   
-  public String getCity()
-  {
-    return this.delegate.getCity();
-  }
-  
-  public void setCity(String city)
-  {
-    this.delegate.setCity(city);
-  }
-  
-  public String getCounty()
-  {
-    return this.delegate.getCounty();
-  }
-  
-  public void setCounty(String county)
-  {
-    this.delegate.setCounty(county);
-  }
-  
-  public String getStreetAddress()
-  {
-    return this.delegate.getStreetAddress();
-  }
-  
-  public void setStreetAddress(String streetAddress)
-  {
-    this.delegate.setStreetAddress(streetAddress);
-  }
-  
-  public String getPostalCode()
-  {
-    return this.delegate.getPostalCode();
-  }
-  
-  public void setPostalCode(String postalCode)
-  {
-    this.delegate.setPostalCode(postalCode);
-  }
-  
-  public String getImage1()
-  {
+  @Override
+  public String getImage1(){
     return this.delegate.getImage1();
   }
   
-  public void setImage1(String image1)
-  {
+  @Override
+  public void setImage1(String image1){
     this.delegate.setImage1(image1);
   }
   
-  public Date getDatecreated()
-  {
+  @Override
+  public Date getDatecreated(){
     return this.delegate.getDatecreated();
   }
   
-  public void setDatecreated(Date datecreated)
-  {
+  @Override
+  public void setDatecreated(Date datecreated) {
     this.delegate.setDatecreated(datecreated);
   }
   
@@ -255,16 +217,6 @@ public class User extends Feeduser {
     this.delegate.setGender(gender);
   }
   
-  public Country getCountry()
-  {
-    return this.delegate.getCountry();
-  }
-  
-  public void setCountry(Country country)
-  {
-    this.delegate.setCountry(country);
-  }
-  
   public Howdidyoufindus getHowDidYouFindUs()
   {
     return this.delegate.getHowDidYouFindUs();
@@ -274,19 +226,29 @@ public class User extends Feeduser {
   {
     this.delegate.setHowDidYouFindUs(howDidYouFindUs);
   }
+
+    @Override
+    public List<Installation> getInstallationList() {
+        return delegate.getInstallationList();
+    }
+
+    @Override
+    public void setInstallationList(List<Installation> installationList) {
+        delegate.setInstallationList(installationList);
+    }
   
-  public int hashCode()
-  {
+  @Override
+  public int hashCode() {
     return this.delegate.hashCode();
   }
   
-  public boolean equals(Object object)
-  {
+  @Override
+  public boolean equals(Object object) {
     return this.delegate.equals(object);
   }
   
-  public String toString()
-  {
+  @Override
+  public String toString() {
     return this.delegate.toString();
   }
 }

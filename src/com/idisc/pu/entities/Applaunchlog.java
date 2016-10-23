@@ -37,65 +37,54 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Chinomso Bassey Ikwuagwu on Oct 5, 2016 5:32:46 PM
  */
 @Entity
-@Table(name = "feedhit")
+@Table(name = "applaunchlog")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Feedhit.findAll", query = "SELECT f FROM Feedhit f"),
-    @NamedQuery(name = "Feedhit.findByFeedhitid", query = "SELECT f FROM Feedhit f WHERE f.feedhitid = :feedhitid"),
-    @NamedQuery(name = "Feedhit.findByHittime", query = "SELECT f FROM Feedhit f WHERE f.hittime = :hittime")})
-public class Feedhit implements Serializable {
+    @NamedQuery(name = "Applaunchlog.findAll", query = "SELECT a FROM Applaunchlog a"),
+    @NamedQuery(name = "Applaunchlog.findByApplaunchlogid", query = "SELECT a FROM Applaunchlog a WHERE a.applaunchlogid = :applaunchlogid"),
+    @NamedQuery(name = "Applaunchlog.findByLaunchtime", query = "SELECT a FROM Applaunchlog a WHERE a.launchtime = :launchtime")})
+public class Applaunchlog implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "feedhitid")
-    private Integer feedhitid;
+    @Column(name = "applaunchlogid")
+    private Integer applaunchlogid;
     @Basic(optional = false)
-    @Column(name = "hittime")
+    @Column(name = "launchtime")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date hittime;
-    @JoinColumn(name = "feedid", referencedColumnName = "feedid")
-    @ManyToOne(optional = false)
-    private Feed feedid;
+    private Date launchtime;
     @JoinColumn(name = "installationid", referencedColumnName = "installationid")
     @ManyToOne
     private Installation installationid;
 
-    public Feedhit() {
+    public Applaunchlog() {
     }
 
-    public Feedhit(Integer feedhitid) {
-        this.feedhitid = feedhitid;
+    public Applaunchlog(Integer applaunchlogid) {
+        this.applaunchlogid = applaunchlogid;
     }
 
-    public Feedhit(Integer feedhitid, Date hittime) {
-        this.feedhitid = feedhitid;
-        this.hittime = hittime;
+    public Applaunchlog(Integer applaunchlogid, Date launchtime) {
+        this.applaunchlogid = applaunchlogid;
+        this.launchtime = launchtime;
     }
 
-    public Integer getFeedhitid() {
-        return feedhitid;
+    public Integer getApplaunchlogid() {
+        return applaunchlogid;
     }
 
-    public void setFeedhitid(Integer feedhitid) {
-        this.feedhitid = feedhitid;
+    public void setApplaunchlogid(Integer applaunchlogid) {
+        this.applaunchlogid = applaunchlogid;
     }
 
-    public Date getHittime() {
-        return hittime;
+    public Date getLaunchtime() {
+        return launchtime;
     }
 
-    public void setHittime(Date hittime) {
-        this.hittime = hittime;
-    }
-
-    public Feed getFeedid() {
-        return feedid;
-    }
-
-    public void setFeedid(Feed feedid) {
-        this.feedid = feedid;
+    public void setLaunchtime(Date launchtime) {
+        this.launchtime = launchtime;
     }
 
     public Installation getInstallationid() {
@@ -109,18 +98,18 @@ public class Feedhit implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (feedhitid != null ? feedhitid.hashCode() : 0);
+        hash += (applaunchlogid != null ? applaunchlogid.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Feedhit)) {
+        if (!(object instanceof Applaunchlog)) {
             return false;
         }
-        Feedhit other = (Feedhit) object;
-        if ((this.feedhitid == null && other.feedhitid != null) || (this.feedhitid != null && !this.feedhitid.equals(other.feedhitid))) {
+        Applaunchlog other = (Applaunchlog) object;
+        if ((this.applaunchlogid == null && other.applaunchlogid != null) || (this.applaunchlogid != null && !this.applaunchlogid.equals(other.applaunchlogid))) {
             return false;
         }
         return true;
@@ -128,7 +117,7 @@ public class Feedhit implements Serializable {
 
     @Override
     public String toString() {
-        return "com.idisc.pu.entities.Feedhit[ feedhitid=" + feedhitid + " ]";
+        return "com.idisc.pu.entities.Applaunchlog[ applaunchlogid=" + applaunchlogid + " ]";
     }
 
 }

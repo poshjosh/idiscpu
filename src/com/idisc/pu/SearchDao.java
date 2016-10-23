@@ -3,33 +3,36 @@ package com.idisc.pu;
 import com.bc.jpa.dao.BuilderForSelectImpl;
 import javax.persistence.TypedQuery;
 import com.bc.jpa.JpaContext;
+import java.util.Objects;
 
 /**
  *
  * @author Josh
  */
-public class Search<R> extends BuilderForSelectImpl<R> {
+public class SearchDao<R> extends BuilderForSelectImpl<R> {
 
     private final int offset;
     
     private final int limit;
 
-    public Search(JpaContext cf, Class<R> resultType, String query, String... cols) {
+    public SearchDao(JpaContext cf, Class<R> resultType, String query, String... cols) {
         this(cf, resultType, -1, -1, query, cols);
     }
     
-    public Search(JpaContext cf, Class<R> resultType, int offset, int limit, String query, String... cols) {
+    public SearchDao(JpaContext cf, Class<R> resultType, int offset, int limit, String query, String... cols) {
         
         super(cf.getEntityManager(resultType), resultType, cf.getDatabaseFormat());
         
-        Search.this.from(resultType);
-        
-        Search.this.descOrder(cf.getMetaData().getIdColumnName(resultType));
+        SearchDao.this.from(resultType);
         
         if(query != null) {
         
-            Search.this.search(query, cols);
+            Objects.requireNonNull(cols);
+        
+            SearchDao.this.search(query, cols);
         }
+       
+        SearchDao.this.descOrder(cf.getMetaData().getIdColumnName(resultType));
         
         this.offset = offset;
         

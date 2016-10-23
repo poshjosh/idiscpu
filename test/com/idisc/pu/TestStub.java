@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import com.bc.jpa.JpaContext;
+import java.net.URI;
+import java.nio.file.Paths;
 
 
 /**
@@ -36,7 +38,8 @@ public class TestStub {
     public JpaContext getJpaContext() {
         if(jpaContext == null) {
             try{
-                jpaContext = new IdiscJpaContext();
+                URI uri = Paths.get(System.getProperty("user.home"), "Documents/NetBeansProjects/idiscpu/test/META-INF/persistence.xml").toUri();
+                jpaContext = new IdiscJpaContext(uri);
             }catch(IOException e) {
                 throw new RuntimeException(e);
             }
