@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
@@ -142,7 +144,7 @@ public class DaoService {
     return output;
   }
 
-  public boolean exists(Class entityType, Criteria.LogicalOperator logicalOptr, Map<String, String> params)  {
+  public boolean isExisting(Class entityType, Criteria.LogicalOperator logicalOptr, Map params)  {
       
     try(BuilderForSelect dao = jpaContext.getBuilderForSelect(entityType)) {
     
@@ -158,6 +160,23 @@ public class DaoService {
     }
   }
 
+    public boolean isExisting(Class entityType, String column, Object value) {
+        boolean found;
+        EntityManager em = this.jpaContext.getEntityManager(entityType);
+        try{
+          Query query = em.createQuery(
+                  "SELECT a."+column+" FROM "+entityType.getSimpleName()+" a WHERE a."+column+" = :"+column);
+          query.setParameter(column, value);
+          query.setFirstResult(0).setMaxResults(1);
+          found = query.getSingleResult() != null;
+        }catch(NoResultException ignored) {
+            found = false;
+        }finally{
+            em.close();
+        }
+        return found;
+    }
+  
   public JpaContext getJpaContext() {
     return jpaContext;
   }

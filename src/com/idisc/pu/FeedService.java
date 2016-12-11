@@ -14,17 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Aug 31, 2016 9:31:37 AM
  */
-public class FeedService {
+public class FeedService extends DaoService {
     
-    private final JpaContext jpaContext;
-
     public FeedService(JpaContext jpaContext) {
-        this.jpaContext = jpaContext;
+        super(jpaContext);
     }
 
     public List<Feed> getFeeds(int offset, int limit, boolean spreadOutput) {
@@ -62,10 +59,9 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, boolean)", "");
     }
   
     public List<Feed> selectFeeds(int offset, int limit) {
-        List<Feed> loadedFeeds = this.jpaContext.getBuilderForSelect(Feed.class)
+        List<Feed> loadedFeeds = this.getJpaContext().getBuilderForSelect(Feed.class)
                 .descOrder(Feed.class, Feed_.feedid.getName())
                 .getResultsAndClose(offset, limit);
-
         return loadedFeeds;
     }
   
@@ -100,12 +96,16 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, boolean)", "");
 
             boolean created;
             try{
+                
                 created = this.createIfNoneExistsWithMatchingData(feed);
+                
             }catch(Exception e) {
+                
+                created = false;
+                
                 XLogger.getInstance().log(Level.WARNING, 
                 "#createIfNoneExistsWithMatchingData(Collection<Feed>). Caught exception: {0}", 
                 this.getClass(), e.toString());
-                created = false;
             }
             
             if(!created) {
@@ -123,7 +123,7 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, boolean)", "");
         
         boolean created = false;
         
-        try(BuilderForSelect<Feed> dao = jpaContext.getBuilderForSelect(Feed.class)) {
+        try(BuilderForSelect<Feed> dao = this.getJpaContext().getBuilderForSelect(Feed.class)) {
         
             this.restrictSearchToDataColumns(dao, feed);
 
@@ -135,9 +135,9 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, boolean)", "");
             }
 
             if(found == null) {
-                
+
                 dao.begin().persist(feed).commit();
-                
+                 
                 XLogger.getInstance().log(Level.FINER, "Persisted feed: {0}", this.getClass(), feed);
                 
                 created = true;
@@ -145,20 +145,6 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, boolean)", "");
         }
         
         return created;
-    }
-    
-    public boolean isExistingUrl(String url) {
-        boolean found;
-        try{
-          TypedQuery<String> query = this.jpaContext.getEntityManager(Feed.class).createQuery("SELECT f.url FROM Feed f WHERE f.url = :url", String.class);
-          query.setParameter("url", url);
-          query.setFirstResult(0);
-          query.setMaxResults(1);
-          found = query.getSingleResult() != null;
-        }catch(NoResultException ignored) {
-            found = false;
-        }
-        return found;
     }
     
     public boolean isExisting(Feed toFind) {
@@ -170,7 +156,7 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, boolean)", "");
         
         Feed found;
         
-        try(BuilderForSelect<Feed> select = jpaContext.getBuilderForSelect(Feed.class)) {
+        try(BuilderForSelect<Feed> select = getJpaContext().getBuilderForSelect(Feed.class)) {
         
             this.restrictSearchToDataColumns(select, toFind);
 

@@ -97,7 +97,7 @@ logger.log(level, "{0} = {1}, found: {2}", cls, installationkeyCol, installation
 
         if (screenname != null && !screenname.isEmpty()) {
 
-          if (this.isExistingScreenname(screenname)) {
+          if (this.isExisting(Installation.class, Installation_.screenname.getName(), screenname)) {
 
             screenname = generateUniqueId();
           }
@@ -142,12 +142,5 @@ logger.log(level, "{0} = {1}, found: {2}", cls, installationkeyCol, installation
   private String generateUniqueId() {
     long n = System.currentTimeMillis() - TIMEOFFSET_MILLIS;
     return "user_" + Long.toHexString(n) + "_" + COUNT.getAndIncrement();
-  }
-  
-  public boolean isExistingScreenname(String screenname) {
-      
-      Installation screennameOwner = getEntity(Installation.class, Installation_.screenname.getName(), screenname, null);
-
-      return screennameOwner != null;
   }
 }

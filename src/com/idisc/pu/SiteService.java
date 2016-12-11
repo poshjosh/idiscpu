@@ -13,15 +13,13 @@ import java.util.Objects;
 /**
  * @author Chinomso Bassey Ikwuagwu on Aug 13, 2016 9:25:31 AM
  */
-public class SiteService {
+public class SiteService extends DaoService {
     
-  private final JpaContext jpaContext;
-  
   private final Timezone defaultTimezone;
   
   public SiteService(JpaContext jpaContext) {
-    this.jpaContext = jpaContext;
-    this.defaultTimezone = this.jpaContext.getEntityManager(Timezone.class).find(Timezone.class, (short)0);
+    super(jpaContext);
+    this.defaultTimezone = jpaContext.getEntityManager(Timezone.class).find(Timezone.class, (short)0);
   }    
 
   public Site from(String siteName, Sitetype sitetype, boolean createIfNone) {
@@ -35,7 +33,7 @@ public class SiteService {
     
     Site output;   
     
-    try(BuilderForSelect<Site> qb = jpaContext.getBuilderForSelect(Site.class)) {
+    try(BuilderForSelect<Site> qb = getJpaContext().getBuilderForSelect(Site.class)) {
       
       qb.from(Site.class);
       
