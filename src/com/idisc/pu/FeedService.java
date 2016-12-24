@@ -122,15 +122,15 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, boolean)", "");
     public boolean createIfNoneExistsWithMatchingData(Feed feed) {
         
         boolean created = false;
-        
-        try(BuilderForSelect<Feed> dao = this.getJpaContext().getBuilderForSelect(Feed.class)) {
+
+        try(BuilderForSelect<Integer> dao = this.getJpaContext().getBuilderForSelect(Feed.class, Integer.class)) {
         
             this.restrictSearchToDataColumns(dao, feed);
 
-            Feed found;
+            Integer found;
             try{
-                found = dao.createQuery().setFirstResult(0).setMaxResults(1).getSingleResult();
-            }catch(NoResultException e) {
+                found = dao.select(Feed_.feedid.getName()).createQuery().setFirstResult(0).setMaxResults(1).getSingleResult();
+            }catch(NoResultException ignored) {
                 found = null;
             }
 
@@ -213,7 +213,7 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, boolean)", "");
         criteria.from(Feed.class);
 
         this.where(criteria, Feed_.title.getName(), toFind.getTitle());
-        this.where(criteria, Feed_.content.getName(), toFind.getContent());
+//        this.where(criteria, Feed_.content.getName(), toFind.getContent());
         this.where(criteria, Feed_.description.getName(), toFind.getDescription());
         this.where(criteria, Feed_.siteid.getName(), toFind.getSiteid());
     }

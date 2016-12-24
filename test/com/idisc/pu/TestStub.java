@@ -73,7 +73,7 @@ public class TestStub {
     protected Object insertFromRandom() throws Exception {
         Object oldEntity = this.getRandomEntity();
         Map m = this.extractMap(oldEntity);
-        Object newEntity = getEntityController(getDefaultEntityClass()).toEntity(m, true);
+        Object newEntity = getEntityController(getDefaultEntityClass()).create(m, true);
         getEntityController(getDefaultEntityClass()).setId(newEntity, null);
         getEntityController(getDefaultEntityClass()).create(newEntity);
         return newEntity;
