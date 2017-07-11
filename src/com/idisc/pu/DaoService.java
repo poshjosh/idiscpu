@@ -60,7 +60,8 @@ public class DaoService {
               params.put(name, entity);
               params.keySet().removeAll(typeParams.keySet());
           }else{
-              XLogger.getInstance().log(Level.WARNING, "Found > 1 results, where only 1 expected in table: {0}, using parameters: {1}", 
+              XLogger.getInstance().log(Level.WARNING, 
+                      "Found > 1 results, where only 1 expected in table: {0}, using parameters: {1}", 
                       this.getClass(), entityType.getSimpleName(), typeParams);
           }
       }

@@ -38,7 +38,7 @@ public class InstallationService extends DaoService {
           Country country, long firstinstallationtime, long lastinstallationtime, boolean createIfNone) {
       
 XLogger logger = XLogger.getInstance();
-Level level = Level.FINER;
+Level level = Level.INFO;
 Class cls = this.getClass();
       
 logger.log(level, "User: {0}", cls, user);
@@ -86,11 +86,13 @@ logger.log(level, "User: {0}", cls, user);
       final String installationkeyCol = Objects.requireNonNull(Installation_.installationkey.getName());
       output = getEntity(Installation.class, installationkeyCol, installationkey, null);
 
-logger.log(level, "{0} = {1}, found: {2}", cls, installationkeyCol, installationkey, output);
+logger.log(level, "For {0} = {1}, found: {2}", cls, installationkeyCol, installationkey, output);
 
       if(output == null) {
 
         output = jpaContext.getDao(Installation.class).findAndClose(Installation.class, installationid);
+
+logger.log(level, "For {0} = {1}, found: {2}", cls, Installation_.installationid.getName(), installationid, output);
       }
 
       if ((output == null) && (createIfNone)) {
@@ -124,8 +126,6 @@ logger.log(level, "{0} = {1}, found: {2}", cls, installationkeyCol, installation
 
         output.setFeeduserid(user == null ? null : user.getDelegate());
         
-        
-
         jpaContext.getDao(Installation.class).begin().persistAndClose(output);
 
         logger.log(level, "For: {0} = {1}, created: ", cls, installationkeyCol, installationkey, output);

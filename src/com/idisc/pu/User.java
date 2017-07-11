@@ -249,6 +249,6 @@ public class User extends Feeduser {
   
   @Override
   public String toString() {
-    return this.delegate.toString();
+    return this.getClass().getName()+"{id="+this.getFeeduserid()+", email: "+this.getEmailAddress()+'}';
   }
 }

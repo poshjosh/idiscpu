@@ -18,9 +18,9 @@ import javax.persistence.NoResultException;
 /**
  * @author Chinomso Bassey Ikwuagwu on Aug 31, 2016 9:31:37 AM
  */
-public class FeedService extends DaoService {
+public class FeedSvc extends DaoService {
     
-    public FeedService(JpaContext jpaContext) {
+    public FeedSvc(JpaContext jpaContext) {
         super(jpaContext);
     }
 
@@ -28,7 +28,7 @@ public class FeedService extends DaoService {
       
         final List<Feed> output;
     
-XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, boolean)", "");
+XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, int, boolean)", "");
       
         List<Feed> loadedFeeds = this.selectFeeds(offset, limit);
 

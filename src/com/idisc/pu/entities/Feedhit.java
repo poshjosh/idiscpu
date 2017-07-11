@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 NUROX Ltd.
+ * Copyright 2017 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,7 +35,7 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Oct 5, 2016 5:32:46 PM
+ * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
  */
 @Entity
 @Table(name = "feedhit")
@@ -56,10 +57,10 @@ public class Feedhit implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date hittime;
     @JoinColumn(name = "feedid", referencedColumnName = "feedid")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Feed feedid;
     @JoinColumn(name = "installationid", referencedColumnName = "installationid")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Installation installationid;
 
     public Feedhit() {

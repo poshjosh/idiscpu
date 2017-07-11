@@ -4,9 +4,11 @@ import com.bc.jpa.JpaContextImpl;
 import com.bc.jpa.util.PersistenceURISelector;
 import com.bc.sql.MySQLDateTimePatterns;
 import com.bc.sql.SQLDateTimePatterns;
+import com.bc.util.XLogger;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.logging.Level;
 
 public class IdiscJpaContext extends JpaContextImpl{
     
@@ -14,7 +16,10 @@ public class IdiscJpaContext extends JpaContextImpl{
     @Override
     public boolean accept(URI uri) {
         final String uriStr = uri.toString();
-        return uriStr.contains("idisc");
+        boolean accepted = uriStr.contains("idisc");
+XLogger.getInstance().log(false ? Level.WARNING : Level.FINE, 
+"Accepted: {0}, persistence config: {1}", this.getClass(), accepted, uriStr);
+        return accepted;
     }
   }
   

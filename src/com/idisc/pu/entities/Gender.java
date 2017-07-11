@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 NUROX Ltd.
+ * Copyright 2017 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -30,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Oct 5, 2016 5:32:46 PM
+ * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
  */
 @Entity
 @Table(name = "gender")
@@ -49,7 +50,7 @@ public class Gender implements Serializable {
     @Basic(optional = false)
     @Column(name = "gender")
     private String gender;
-    @OneToMany(mappedBy = "gender")
+    @OneToMany(mappedBy = "gender", fetch = FetchType.LAZY)
     private List<Feeduser> feeduserList;
 
     public Gender() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 NUROX Ltd.
+ * Copyright 2017 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,7 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Oct 5, 2016 5:32:46 PM
+ * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
  */
 @Entity
 @Table(name = "feed")
@@ -101,16 +102,16 @@ public class Feed implements Serializable {
     private Date timemodified;
     @Column(name = "extradetails")
     private String extradetails;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "feedid")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "feedid", fetch = FetchType.LAZY)
     private List<Bookmarkfeed> bookmarkfeedList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "feedid")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "feedid", fetch = FetchType.LAZY)
     private List<Favoritefeed> favoritefeedList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "feedid")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "feedid", fetch = FetchType.LAZY)
     private List<Feedhit> feedhitList;
     @JoinColumn(name = "siteid", referencedColumnName = "siteid")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Site siteid;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "feedid")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "feedid", fetch = FetchType.LAZY)
     private List<Comment> commentList;
 
     public Feed() {

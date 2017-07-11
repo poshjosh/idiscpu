@@ -35,7 +35,13 @@ public class SelectByDate<E, I> {
 
     public List<E> sort(List<E> resultList, Comparator<E> comparator, int maxOutputSize) {
         
-        Collections.sort(resultList, comparator);
+        try{
+            Collections.sort(resultList, comparator);
+        }catch(IllegalArgumentException e) {
+XLogger.getInstance().log(Level.WARNING, "Exception while sorting list:\n{0}", 
+        this.getClass(), resultList);             
+            throw e;
+        }
 
         final int resultsCount = resultList.size();
 

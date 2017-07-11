@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 NUROX Ltd.
+ * Copyright 2017 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,7 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Oct 5, 2016 5:32:49 PM
+ * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:04 PM
  */
 @Entity
 @Table(name = "comment")
@@ -74,18 +75,18 @@ public class Comment implements Serializable {
     private Date timemodified;
     @Column(name = "extradetails")
     private String extradetails;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "commentid")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "commentid", fetch = FetchType.LAZY)
     private List<Commentreplynotice> commentreplynoticeList;
     @JoinColumn(name = "feedid", referencedColumnName = "feedid")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Feed feedid;
     @JoinColumn(name = "installationid", referencedColumnName = "installationid")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Installation installationid;
-    @OneToMany(mappedBy = "repliedto")
+    @OneToMany(mappedBy = "repliedto", fetch = FetchType.LAZY)
     private List<Comment> commentList;
     @JoinColumn(name = "repliedto", referencedColumnName = "commentid")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Comment repliedto;
 
     public Comment() {

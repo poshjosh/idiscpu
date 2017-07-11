@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 NUROX Ltd.
+ * Copyright 2017 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -30,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Oct 5, 2016 5:32:45 PM
+ * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:02 PM
  */
 @Entity
 @Table(name = "country")
@@ -55,11 +56,11 @@ public class Country implements Serializable {
     private String codeIso2;
     @Column(name = "codeIso3")
     private String codeIso3;
-    @OneToMany(mappedBy = "country")
+    @OneToMany(mappedBy = "country", fetch = FetchType.LAZY)
     private List<Localaddress> localaddressList;
-    @OneToMany(mappedBy = "countryid")
+    @OneToMany(mappedBy = "countryid", fetch = FetchType.LAZY)
     private List<Site> siteList;
-    @OneToMany(mappedBy = "countryid")
+    @OneToMany(mappedBy = "countryid", fetch = FetchType.LAZY)
     private List<Installation> installationList;
 
     public Country() {
