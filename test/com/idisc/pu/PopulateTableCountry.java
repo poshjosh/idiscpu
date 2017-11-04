@@ -17,8 +17,7 @@
 package com.idisc.pu;
 
 import com.bc.io.CharFileIO;
-import com.bc.jpa.JpaContext;
-import com.bc.jpa.dao.BuilderForUpdate;
+import com.bc.jpa.context.JpaContext;
 import com.idisc.pu.entities.Country;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +30,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import com.bc.jpa.dao.Update;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Sep 24, 2016 12:16:24 PM
@@ -60,7 +60,7 @@ public class PopulateTableCountry extends TestStub{
         
         final JpaContext jpaContext = this.getJpaContext();
         
-        try(BuilderForUpdate<Country> dao = jpaContext.getBuilderForUpdate(Country.class)) {
+        try(Update<Country> dao = jpaContext.getDaoForUpdate(Country.class)) {
 
             dao.begin();
 

@@ -17,8 +17,7 @@
 package com.idisc.pu;
 
 import com.bc.io.CharFileIO;
-import com.bc.jpa.JpaContext;
-import com.bc.jpa.dao.BuilderForUpdate;
+import com.bc.jpa.context.JpaContext;
 import com.idisc.pu.entities.Timezone;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +33,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import com.bc.jpa.dao.Update;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Oct 3, 2016 3:33:30 PM
@@ -60,14 +60,14 @@ public class PopulateTableTimezone extends TestStub{
         
         final JpaContext jpaContext = this.getJpaContext();
         
-        try(BuilderForUpdate<Timezone> dao = jpaContext.getBuilderForUpdate(Timezone.class)) {
+        try(Update<Timezone> dao = jpaContext.getDaoForUpdate(Timezone.class)) {
 
             dao.begin();
 
             short i;
             try{
                 final String idColumn = jpaContext.getMetaData().getIdColumnName(Timezone.class);
-                List<Timezone> found = jpaContext.getBuilderForSelect(Timezone.class).ascOrder(idColumn).getResultsAndClose();
+                List<Timezone> found = jpaContext.getDaoForSelect(Timezone.class).ascOrder(idColumn).getResultsAndClose();
                 final int size = found.size();
                 if(size > Short.MAX_VALUE) {
                     throw new UnsupportedOperationException();
@@ -120,7 +120,7 @@ System.out.println("----------------- Skipping "+sval);
     }  
 
     private Timezone createAndUpdateDatabase(
-            BuilderForUpdate dao, short id, String abbr, String sval) {
+            Update dao, short id, String abbr, String sval) {
         Timezone timezone = this.createTimezone(id, abbr, sval);
         Timezone found = dao.getEntityManager().find(Timezone.class, id);
         if(found != null) {

@@ -7,8 +7,9 @@ import java.util.Map;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.bc.jpa.JpaContext;
-import com.bc.jpa.JpaMetaData;
+import com.bc.jpa.context.JpaContext;
+import com.bc.jpa.metadata.JpaMetaData;
+import java.util.Set;
 
 
 /**
@@ -46,13 +47,13 @@ public class PersistenceMetaDataTest extends TestStub {
     @Test
     public void testGetReference() throws Exception {
 long tB4 = System.currentTimeMillis();
-long mB4 = Runtime.getRuntime().freeMemory();
+long mb4 = com.bc.util.Util.availableMemory();
 
-        String [] puNames = metaData.getPersistenceUnitNames();
+        Set<String> puNames = metaData.getPersistenceUnitNames();
         
         for(String puName:puNames) {
             
-            Class [] classes = metaData.getEntityClasses(puName);
+            Set<Class> classes = metaData.getEntityClasses(puName);
             
             for(Class aClass:classes) {
 System.out.println("Class: "+aClass.getName());                
@@ -62,7 +63,7 @@ System.out.println("Class: "+aClass.getName());
             }
         }
         
-System.out.println("TOTAL, Time: "+(System.currentTimeMillis()-tB4)+", Memory: "+(mB4-Runtime.getRuntime().freeMemory()));
+System.out.println("TOTAL, Time: "+(System.currentTimeMillis()-tB4)+", Memory: "+(mb4-com.bc.util.Util.usedMemory(mb4)));
     }
 
     private void testGetReference(Class aClass, String col, Object val) throws Exception {
@@ -169,13 +170,13 @@ System.out.println();
     public void testAll() throws Exception {
         
 long tB4 = System.currentTimeMillis();
-long mB4 = Runtime.getRuntime().freeMemory();
+long mb4 = com.bc.util.Util.availableMemory();
 
-        String [] puNames = metaData.getPersistenceUnitNames();
+        Set<String> puNames = metaData.getPersistenceUnitNames();
         
         for(String puName:puNames) {
             
-            Class [] classes = metaData.getEntityClasses(puName);
+            Set<Class> classes = metaData.getEntityClasses(puName);
             
             for(Class aClass:classes) {
                 
@@ -183,7 +184,7 @@ long mB4 = Runtime.getRuntime().freeMemory();
             }
         }
         
-System.out.println("TOTAL, Time: "+(System.currentTimeMillis()-tB4)+", Memory: "+(mB4-Runtime.getRuntime().freeMemory()));
+System.out.println("TOTAL, Time: "+(System.currentTimeMillis()-tB4)+", Memory: "+(mb4-com.bc.util.Util.usedMemory(mb4)));
     }
     
     private void test(JpaMetaData metaData, Class aClass) throws IOException {
@@ -191,7 +192,7 @@ System.out.println("TOTAL, Time: "+(System.currentTimeMillis()-tB4)+", Memory: "
         try{
 
 long tB4 = System.currentTimeMillis();
-long mB4 = Runtime.getRuntime().freeMemory();
+long mb4 = com.bc.util.Util.availableMemory();
 
             String puName = metaData.getPersistenceUnitName(aClass);
             
@@ -202,9 +203,9 @@ long mB4 = Runtime.getRuntime().freeMemory();
             String idColumn = metaData.getIdColumnName(aClass);
 
 log("Class:"+aClass+", persistence unit:"+puName+", database:"+databaseName+", table:"+tableName+", idColumn:"+idColumn);            
-            Class cls = metaData.getEntityClass(databaseName, tableName);
+            Class cls = metaData.getEntityClass(databaseName, null, tableName);
 
-System.out.println("Time: "+(System.currentTimeMillis()-tB4)+", Memory: "+(mB4-Runtime.getRuntime().freeMemory()));
+System.out.println("Time: "+(System.currentTimeMillis()-tB4)+", Memory: "+(mb4-com.bc.util.Util.usedMemory(mb4)));
             
 this.checkEquality(aClass, "Input class", cls, "Class from metaData");            
         }catch(Exception e) {

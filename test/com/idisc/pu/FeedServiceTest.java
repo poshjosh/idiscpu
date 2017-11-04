@@ -15,8 +15,7 @@
  */
 package com.idisc.pu;
 
-import com.bc.jpa.JpaContext;
-import com.bc.jpa.dao.BuilderForSelect;
+import com.bc.jpa.context.JpaContext;
 import com.bc.jpa.dao.Criteria;
 import com.bc.util.XLogger;
 import com.idisc.pu.entities.Feed;
@@ -30,6 +29,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import com.bc.jpa.dao.Select;
 
 /**
  * @author Josh
@@ -75,7 +75,7 @@ public class FeedServiceTest extends TestStub {
             }
         }
 
-        try(BuilderForSelect dao = jpaContext.getBuilderForSelect(entityType)) {
+        try(Select dao = jpaContext.getDaoForSelect(entityType)) {
 
             dao.from(entityType);
 
@@ -106,7 +106,7 @@ public class FeedServiceTest extends TestStub {
 
         final List<Feed> feeds = instance.getFeeds(offset, limit, spreadOutput);
 
-//        final Site site = this.getJpaContext().getBuilderForSelect(Site.class).findAndClose(28);
+//        final Site site = this.getJpaContext().getDaoForSelect(Site.class).findAndClose(28);
 //        List<Feed> feeds = Arrays.asList(this.getFeed1(site), this.getFeed2(site));
 //        Collection<Feed> failedToCreate = instance.createIfNoneExistsWithMatchingData(feeds);
 

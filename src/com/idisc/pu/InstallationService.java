@@ -1,7 +1,6 @@
 package com.idisc.pu;
 
-import com.bc.jpa.JpaContext;
-import com.bc.jpa.dao.BuilderForSelect;
+import com.bc.jpa.context.JpaContext;
 import com.bc.util.XLogger;
 import com.idisc.pu.entities.Country;
 import com.idisc.pu.entities.Feeduser;
@@ -14,6 +13,7 @@ import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+import com.bc.jpa.dao.Select;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Aug 13, 2016 9:47:40 AM
@@ -38,7 +38,7 @@ public class InstallationService extends DaoService {
           Country country, long firstinstallationtime, long lastinstallationtime, boolean createIfNone) {
       
 XLogger logger = XLogger.getInstance();
-Level level = Level.INFO;
+Level level = Level.FINE;
 Class cls = this.getClass();
       
 logger.log(level, "User: {0}", cls, user);
@@ -55,7 +55,7 @@ logger.log(level, "User: {0}", cls, user);
 
       if(list == null) {
 
-        try(BuilderForSelect<Installation> dao = jpaContext.getBuilderForSelect(Installation.class)) {
+        try(Select<Installation> dao = jpaContext.getDaoForSelect(Installation.class)) {
 
           list = dao.where(Installation.class, Installation_.feeduserid.getName(), user.getDelegate())
               .createQuery().getResultList();

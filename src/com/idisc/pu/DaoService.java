@@ -15,8 +15,7 @@
  */
 package com.idisc.pu;
 
-import com.bc.jpa.JpaContext;
-import com.bc.jpa.dao.BuilderForSelect;
+import com.bc.jpa.context.JpaContext;
 import com.bc.jpa.dao.Criteria;
 import com.bc.util.XLogger;
 import java.util.List;
@@ -29,6 +28,7 @@ import javax.persistence.Query;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
+import com.bc.jpa.dao.Select;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Sep 24, 2016 1:45:25 PM
@@ -43,13 +43,13 @@ public class DaoService {
     
   public void convertParams(Class entityType, Map params) {
       
-      Map typeParams = this.jpaContext.getDatabaseParameters(entityType, params);
+      Map typeParams = this.jpaContext.getDatabaseFormat().toDatabaseFormat(entityType, params);
       
       if(typeParams == null || typeParams.isEmpty()) {
           return;
       }
       
-      final BuilderForSelect<?> dao = this.jpaContext.getBuilderForSelect(entityType);
+      final Select<?> dao = this.jpaContext.getDaoForSelect(entityType);
       
       final List<?> found = dao.where(entityType, typeParams).getResultsAndClose();
       
@@ -95,12 +95,12 @@ public class DaoService {
     Objects.requireNonNull(entityType);
     Objects.requireNonNull(params);
     E entity;
-    Map entityParams = jpaContext.getDatabaseParameters(entityType, params);
+    Map entityParams = jpaContext.getDatabaseFormat().toDatabaseFormat(entityType, params);
     if(entityParams == null || entityParams.isEmpty()) {
       entity = defaultValue;
     }else{
       try{
-            entity = jpaContext.getBuilderForSelect(entityType)
+            entity = jpaContext.getDaoForSelect(entityType)
                     .where(entityType, entityParams).getSingleResultAndClose();
       }catch(NoResultException e) {
         entity = defaultValue;
@@ -113,7 +113,7 @@ public class DaoService {
       
     E output;
     
-    try(BuilderForSelect<E> dao = this.jpaContext.getBuilderForSelect(entityType)) {
+    try(Select<E> dao = this.jpaContext.getDaoForSelect(entityType)) {
     
         Objects.requireNonNull(columnName, "Attempted to select a 'null' column from the table: "+entityType.getSimpleName());
 
@@ -147,9 +147,9 @@ public class DaoService {
 
   public boolean isExisting(Class entityType, Criteria.LogicalOperator logicalOptr, Map params)  {
       
-    try(BuilderForSelect dao = jpaContext.getBuilderForSelect(entityType)) {
+    try(Select dao = jpaContext.getDaoForSelect(entityType)) {
     
-        dao.where(entityType, BuilderForSelect.EQ, logicalOptr, params);
+        dao.where(entityType, Select.EQ, logicalOptr, params);
 
         final List found = dao.createQuery().setMaxResults(1).getResultList();
 

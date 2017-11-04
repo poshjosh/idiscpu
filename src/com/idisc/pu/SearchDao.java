@@ -1,38 +1,55 @@
 package com.idisc.pu;
 
-import com.bc.jpa.dao.BuilderForSelectImpl;
+import com.bc.jpa.dao.SelectImpl;
 import javax.persistence.TypedQuery;
-import com.bc.jpa.JpaContext;
+import com.bc.jpa.context.JpaContext;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 /**
- *
  * @author Josh
  */
-public class SearchDao<R> extends BuilderForSelectImpl<R> {
+public class SearchDao<R> extends SelectImpl<R> {
 
     private final int offset;
     
     private final int limit;
 
-    public SearchDao(JpaContext cf, Class<R> resultType, String query, String... cols) {
-        this(cf, resultType, -1, -1, query, cols);
+    public SearchDao(JpaContext jpa, Class<R> resultType, String query, String... cols) {
+        this(jpa, resultType, -1, -1, query, cols);
     }
     
-    public SearchDao(JpaContext cf, Class<R> resultType, int offset, int limit, String query, String... cols) {
+    public SearchDao(JpaContext jpa, Class<R> resultType, 
+            int offset, int limit, String query, String... cols) {
+        this(jpa, resultType, offset, limit, Collections.singleton(query), cols);
+    }
         
-        super(cf.getEntityManager(resultType), resultType, cf.getDatabaseFormat());
+        
+    public SearchDao(JpaContext jpa, Class<R> resultType, int offset, int limit, 
+            Collection<String> queryList, String... cols) {
+        
+        super(jpa.getEntityManager(resultType), resultType, jpa.getDatabaseFormat());
         
         SearchDao.this.from(resultType);
         
-        if(query != null) {
+        if(queryList != null && !queryList.isEmpty()) {
         
             Objects.requireNonNull(cols);
-        
-            SearchDao.this.search(query, cols);
+            
+            for(String query : queryList) {
+                if(query == null) {
+                    continue;
+                }
+                query = query.trim();
+                if(query.isEmpty()) {
+                    continue;
+                }
+                SearchDao.this.search(query, cols);
+            }
         }
        
-        SearchDao.this.descOrder(cf.getMetaData().getIdColumnName(resultType));
+        SearchDao.this.descOrder(jpa.getMetaData().getIdColumnName(resultType));
         
         this.offset = offset;
         

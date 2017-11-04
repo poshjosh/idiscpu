@@ -1,34 +1,69 @@
 package com.idisc.pu;
 
-import com.bc.jpa.JpaContext;
-import com.bc.jpa.dao.BuilderForSelect;
+import com.bc.jpa.context.JpaContext;
 import com.bc.jpa.dao.Criteria;
-import com.bc.util.XLogger;
 import com.idisc.pu.entities.Feed;
 import com.idisc.pu.entities.Feed_;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import com.bc.jpa.dao.Select;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Aug 31, 2016 9:31:37 AM
  */
-public class FeedSvc extends DaoService {
+public class FeedService extends DaoService {
+
+    private static final Logger logger = Logger.getLogger(FeedService.class.getName());
     
-    public FeedSvc(JpaContext jpaContext) {
+    public FeedService(JpaContext jpaContext) {
         super(jpaContext);
+    }
+    
+    public Integer getNumberOfFeedsAfter(String sitename, Date maxAge) {
+        
+        final JpaContext jpaContext = this.getJpaContext();
+        
+        final Integer siteId = this.getSiteService().getIdForSitename(sitename);
+        
+        try(Select<Integer> dao = jpaContext.getDaoForSelect(Feed.class, Integer.class)) {
+            TypedQuery<Integer> tq = dao.count(Feed.class, Feed_.feedid)
+              .where(Feed_.siteid, siteId)
+              .and().where(Feed_.datecreated, Select.GT, maxAge).createQuery();
+            final Integer count = tq.getSingleResult();
+            return count == null ? 0 : count;
+        }
+    }
+
+    public Optional<Feed> getMostRecentForSite(String site) {
+        
+        final JpaContext jpaContext = this.getJpaContext();
+        
+        final Integer siteId = this.getSiteService().getIdForSitename(site);
+        
+        final List<Feed> results = jpaContext.getDaoForSelect(Feed.class)
+                .where(Feed_.siteid, siteId)
+                .descOrder(Feed.class, Feed_.feeddate)
+                .getResultsAndClose(0, 1);
+        
+       
+        return results == null || results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     public List<Feed> getFeeds(int offset, int limit, boolean spreadOutput) {
       
         final List<Feed> output;
     
-XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, int, boolean)", "");
+        logger.entering(this.getClass().getName(), "#getFeeds(int, int, boolean)");
       
         List<Feed> loadedFeeds = this.selectFeeds(offset, limit);
 
@@ -50,7 +85,7 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, int, boolean)", 
                   output = Collections.unmodifiableList(truncate(loadedFeeds, limit));  
             }
 
-            XLogger.getInstance().log(Level.FINE, "Loaded {0} feeds", getClass(), sizeOf(output));
+            logger.log(Level.FINE, "Loaded {0} feeds", sizeOf(output));
 
             printFirstDateLastDateAndFeedIds(Level.FINER, "AFTER", output);
         }
@@ -59,8 +94,8 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, int, boolean)", 
     }
   
     public List<Feed> selectFeeds(int offset, int limit) {
-        List<Feed> loadedFeeds = this.getJpaContext().getBuilderForSelect(Feed.class)
-                .descOrder(Feed.class, Feed_.feedid.getName())
+        List<Feed> loadedFeeds = this.getJpaContext().getDaoForSelect(Feed.class)
+                .descOrder(Feed.class, Feed_.feedid)
                 .getResultsAndClose(offset, limit);
         return loadedFeeds;
     }
@@ -103,9 +138,9 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, int, boolean)", 
                 
                 created = false;
                 
-                XLogger.getInstance().log(Level.WARNING, 
+                logger.log(Level.WARNING, 
                 "#createIfNoneExistsWithMatchingData(Collection<Feed>). Caught exception: {0}", 
-                this.getClass(), e.toString());
+                e.toString());
             }
             
             if(!created) {
@@ -123,22 +158,28 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, int, boolean)", 
         
         boolean created = false;
 
-        try(BuilderForSelect<Integer> dao = this.getJpaContext().getBuilderForSelect(Feed.class, Integer.class)) {
+        try(Select<Integer> dao = this.getJpaContext().getDaoForSelect(Feed.class, Integer.class)) {
         
-            this.restrictSearchToDataColumns(dao, feed);
+            final boolean persist;
+            
+            if(this.restrictSearchToDataColumns(dao, feed)) {
 
-            Integer found;
-            try{
-                found = dao.select(Feed_.feedid.getName()).createQuery().setFirstResult(0).setMaxResults(1).getSingleResult();
-            }catch(NoResultException ignored) {
-                found = null;
+                Integer found;
+                try{
+                    found = dao.select(Feed_.feedid).createQuery().setFirstResult(0).setMaxResults(1).getSingleResult();
+                }catch(NoResultException ignored) {
+                    found = null;
+                }
+                persist = found == null;
+            }else{
+                persist = true;
             }
 
-            if(found == null) {
+            if(persist) {
 
                 dao.begin().persist(feed).commit();
                  
-                XLogger.getInstance().log(Level.FINER, "Persisted feed: {0}", this.getClass(), feed);
+                logger.fine(() -> "Saving " + feed.getSiteid().getSite() + " title: " + feed.getTitle());
                 
                 created = true;
             }    
@@ -156,11 +197,16 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, int, boolean)", 
         
         Feed found;
         
-        try(BuilderForSelect<Feed> select = getJpaContext().getBuilderForSelect(Feed.class)) {
+        try(Select<Feed> select = getJpaContext().getDaoForSelect(Feed.class)) {
         
-            this.restrictSearchToDataColumns(select, toFind);
+            if(this.restrictSearchToDataColumns(select, toFind)) {
 
-            found = select.createQuery().setFirstResult(0).setMaxResults(1).getSingleResult();
+                found = select.createQuery().setFirstResult(0).setMaxResults(1).getSingleResult();
+                
+            }else{
+                
+                found = outputIfNone;
+            }
             
         }catch(NoResultException ignored) {
          
@@ -208,28 +254,50 @@ XLogger.getInstance().entering(this.getClass(), "#getFeeds(int, int, boolean)", 
         appendTo.append(", imageUrl: ").append(feed.getImageurl());
     }
     
-    private void restrictSearchToDataColumns(Criteria criteria, Feed toFind) {
+    private boolean restrictSearchToDataColumns(Criteria criteria, Feed toFind) {
         
         criteria.from(Feed.class);
 
-        this.where(criteria, Feed_.title.getName(), toFind.getTitle());
+        int whereCount = 0;
+        if(this.where(criteria, Feed_.title.getName(), toFind.getTitle())) {
+            ++whereCount;
+        }
 //        this.where(criteria, Feed_.content.getName(), toFind.getContent());
-        this.where(criteria, Feed_.description.getName(), toFind.getDescription());
-        this.where(criteria, Feed_.siteid.getName(), toFind.getSiteid());
+        if(this.where(criteria, Feed_.description.getName(), toFind.getDescription())) {
+            ++whereCount;
+        }
+        
+        if(this.where(criteria, Feed_.siteid.getName(), toFind.getSiteid())) {
+            ++whereCount;
+        }
+        
+        return whereCount >= 2;
     }
     
-    private void where (Criteria criteria, String key, Object val) {
+    private boolean where (Criteria criteria, String key, Object val) {
         if(val != null) {
             criteria.where(key, Criteria.EQ, val);
+            return true;
         }
+        return false;
     }
 
     private void printFirstDateLastDateAndFeedIds(Level level, String key, List<Feed> feeds) {
-        if (XLogger.getInstance().isLoggable(level, this.getClass()) && feeds != null && !feeds.isEmpty()) {
+        if (logger.isLoggable(level) && feeds != null && !feeds.isEmpty()) {
             Feed first = (Feed)feeds.get(0);
             Feed last = (Feed)feeds.get(feeds.size() - 1);
-            XLogger.getInstance().log(level, "{0}. First feed, date: {1}. Last feed, date: {2}\n{3}", 
-                    this.getClass(), key, first.getFeeddate(), last.getFeeddate(), feeds);
+            logger.log(level, () -> MessageFormat.format(
+                    "{0}. First feed, date: {1}. Last feed, date: {2}\n{3}", 
+                     key, first.getFeeddate(), last.getFeeddate(), feeds));
+            
         }
+    }
+    
+    private transient SiteService _ss;
+    public SiteService getSiteService() {
+        if(_ss == null) {
+            _ss = new SiteService(this.getJpaContext());
+        }
+        return _ss;
     }
 }

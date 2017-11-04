@@ -15,12 +15,12 @@
  */
 package com.idisc.pu;
 
-import com.bc.jpa.JpaContext;
-import com.bc.jpa.dao.BuilderForSelect;
+import com.bc.jpa.context.JpaContext;
 import com.idisc.pu.entities.Installation;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import com.bc.jpa.dao.Select;
 
 /**
  * @author Josh
@@ -46,7 +46,7 @@ public class DaoServiceTest extends TestStub {
     private <E> void isExisting(Class cls, String col, Class<E> colType, int count) {
         final JpaContext jpaContext = this.getJpaContext();
         final DaoService instance = new DaoService(jpaContext);
-        try(BuilderForSelect<E> dao = jpaContext.getBuilderForSelect(cls, colType)) {
+        try(Select<E> dao = jpaContext.getDaoForSelect(cls, colType)) {
             List<E> values = dao.select(col).createQuery().setMaxResults(count).getResultList();
             for(E value : values) {
                 final boolean expResult = true;

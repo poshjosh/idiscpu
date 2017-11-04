@@ -1,7 +1,7 @@
 package com.idisc.pu;
 
 import com.idisc.pu.entities.Feed;
-import com.bc.jpa.EntityController;
+import com.bc.jpa.controller.EntityController;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import com.bc.jpa.JpaContext;
+import com.bc.jpa.context.JpaContext;
 import java.net.URI;
 import java.nio.file.Paths;
 

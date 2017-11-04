@@ -1,14 +1,14 @@
 package com.idisc.pu;
 
-import com.bc.jpa.JpaContext;
+import com.bc.jpa.context.JpaContext;
 import com.idisc.pu.entities.Site;
 import com.idisc.pu.entities.Site_;
 import com.idisc.pu.entities.Sitetype;
 import java.util.Date;
 import java.util.List;
-import com.bc.jpa.dao.BuilderForSelect;
 import com.idisc.pu.entities.Timezone;
 import java.util.Objects;
+import com.bc.jpa.dao.Select;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Aug 13, 2016 9:25:31 AM
@@ -20,7 +20,17 @@ public class SiteService extends DaoService {
   public SiteService(JpaContext jpaContext) {
     super(jpaContext);
     this.defaultTimezone = jpaContext.getEntityManager(Timezone.class).find(Timezone.class, (short)0);
-  }    
+  }  
+
+  public Integer getIdForSitename(String sitename) {
+    final Integer siteId;
+    try(Select<Integer> qb = this.getJpaContext().getDaoForSelect(Site.class, Integer.class)) {
+        siteId = qb
+                .select(Site.class, Site_.siteid)
+                .where(Site_.site, sitename).createQuery().getSingleResult();
+    }
+    return siteId;
+  }  
 
   public Site from(String siteName, Sitetype sitetype, boolean createIfNone) {
       
@@ -33,7 +43,7 @@ public class SiteService extends DaoService {
     
     Site output;   
     
-    try(BuilderForSelect<Site> qb = getJpaContext().getBuilderForSelect(Site.class)) {
+    try(Select<Site> qb = getJpaContext().getDaoForSelect(Site.class)) {
       
       qb.from(Site.class);
       
