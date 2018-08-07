@@ -115,9 +115,9 @@ public class FeedServiceTest extends TestStub {
 
 //        final Site site = this.getJpaContext().getDaoForSelect(Site.class).findAndClose(28);
 //        List<Feed> feeds = Arrays.asList(this.getFeed1(site), this.getFeed2(site));
-//        Collection<Feed> failedToCreate = instance.createIfNoneExistsWithMatchingData(feeds);
+//        Collection<Feed> failedToCreate = instance.create(feeds, true);
 
-        Collection<Feed> failedToCreate = instance.createIfNoneExistsWithMatchingData(feeds);
+        Collection<Feed> failedToCreate = instance.create(feeds, true);
         
 System.out.println("Success rate: "+(feeds.size()-failedToCreate.size())+'/'+feeds.size()+"\nZERO success rate is expected");        
 

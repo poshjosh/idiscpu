@@ -194,7 +194,7 @@ System.out.println("TOTAL, Time: "+(System.currentTimeMillis()-tB4)+", Memory: "
 long tB4 = System.currentTimeMillis();
 long mb4 = com.bc.util.Util.availableMemory();
 
-            String puName = metaData.getPersistenceUnitName(aClass);
+            Set<String> puNames = metaData.getPersistenceUnitNames();
             
             String databaseName = metaData.getDatabaseName(aClass);
             
@@ -202,7 +202,7 @@ long mb4 = com.bc.util.Util.availableMemory();
 
             String idColumn = metaData.getIdColumnName(aClass);
 
-log("Class:"+aClass+", persistence unit:"+puName+", database:"+databaseName+", table:"+tableName+", idColumn:"+idColumn);            
+log("Class:"+aClass+", persistence-units:"+puNames+", database:"+databaseName+", table:"+tableName+", idColumn:"+idColumn);            
             Class cls = metaData.getEntityClass(databaseName, null, tableName);
 
 System.out.println("Time: "+(System.currentTimeMillis()-tB4)+", Memory: "+(mb4-com.bc.util.Util.usedMemory(mb4)));

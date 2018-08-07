@@ -67,7 +67,7 @@ public class PopulateTableTimezone extends TestStub{
             short i;
             try{
                 final String idColumn = jpaContext.getMetaData().getIdColumnName(Timezone.class);
-                List<Timezone> found = jpaContext.getDaoForSelect(Timezone.class).ascOrder(idColumn).getResultsAndClose();
+                List<Timezone> found = jpaContext.getDaoForSelect(Timezone.class).from(Timezone.class).ascOrder(idColumn).getResultsAndClose();
                 final int size = found.size();
                 if(size > Short.MAX_VALUE) {
                     throw new UnsupportedOperationException();

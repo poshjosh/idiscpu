@@ -1,6 +1,6 @@
 package com.idisc.pu;
 
-import com.bc.jpa.context.JpaContext;
+import com.bc.jpa.context.PersistenceUnitContext;
 import com.bc.jpa.dao.Criteria;
 import com.idisc.pu.entities.Feed;
 import com.idisc.pu.entities.Feed_;
@@ -25,17 +25,17 @@ public class FeedDao extends DaoBase {
 
     private transient static final Logger LOG = Logger.getLogger(FeedDao.class.getName());
     
-    public FeedDao(JpaContext jpaContext) {
+    public FeedDao(PersistenceUnitContext jpaContext) {
         super(jpaContext);
     }
     
     public Long getNumberOfFeedsAfter(String sitename, Date maxAge) {
         
-        final JpaContext jpaContext = this.getJpaContext();
+        final PersistenceUnitContext jpaContext = this.getJpaContext();
         
         final Integer siteId = this.getSiteService().getIdForSitename(sitename);
         
-        try(Select<Long> dao = jpaContext.getDaoForSelect(Feed.class, Long.class)) {
+        try(Select<Long> dao = jpaContext.getDaoForSelect(Long.class)) {
             TypedQuery<Long> tq = dao.count(Feed.class, Feed_.feedid)
               .where(Feed_.siteid, siteId)
               .and().where(Feed_.datecreated, Select.GT, maxAge).createQuery();
@@ -46,16 +46,15 @@ public class FeedDao extends DaoBase {
 
     public Optional<Feed> getMostRecentForSite(String site) {
         
-        final JpaContext jpaContext = this.getJpaContext();
+        final PersistenceUnitContext jpaContext = this.getJpaContext();
         
         final Integer siteId = this.getSiteService().getIdForSitename(site);
         
         final List<Feed> results = jpaContext.getDaoForSelect(Feed.class)
                 .where(Feed_.siteid, siteId)
-                .descOrder(Feed.class, Feed_.feeddate)
+                .descOrder(Feed_.feeddate)
                 .getResultsAndClose(0, 1);
         
-       
         return results == null || results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
@@ -114,10 +113,11 @@ public class FeedDao extends DaoBase {
   
     /**
      * @param feeds The collection of feeds to create if none exists with matching data.
+     * @param ifNoneExistsWithMatchingData
      * @return The collection of feeds (a subset of the input collection) which were
      * not created. An empty collection is returned if all were successfully created.
      */
-    public Collection<Feed> createIfNoneExistsWithMatchingData(Collection<Feed> feeds) {
+    public Collection<Feed> create(Collection<Feed> feeds, boolean ifNoneExistsWithMatchingData) {
      
         Collection<Feed> failed = null;
         
@@ -132,7 +132,7 @@ public class FeedDao extends DaoBase {
             boolean created;
             try{
                 
-                created = this.createIfNoneExistsWithMatchingData(feed);
+                created = this.create(feed, ifNoneExistsWithMatchingData);
                 
             }catch(Exception e) {
                 
@@ -154,56 +154,18 @@ public class FeedDao extends DaoBase {
         return failed == null ? Collections.EMPTY_LIST : failed;
     }
     
-    public boolean createIfNoneExistsWithMatchingData(Feed feed) {
-        
-        boolean created = false;
-
-        try(Select<Integer> dao = this.getJpaContext().getDaoForSelect(Feed.class, Integer.class)) {
-        
-            Integer found;
-            
-            if(this.restrictSearchToDataColumns(dao, feed)) {
-
-                try{
-                    found = dao.select(Feed_.feedid).createQuery().setFirstResult(0).setMaxResults(1).getSingleResult();
-                }catch(NoResultException ignored) {
-                    found = null;
-                }
-            }else{
-                found = null;
-            }
-            
-            if(found == null) {
-
-                dao.begin().persist(feed).commit();
-                 
-                LOG.fine(() -> "Saving " + feed.getSiteid().getSite() + " title: " + feed.getTitle());
-                
-                created = true;
-                
-            }else{
-                
-                final Integer feedid = found;
-                LOG.fine(() -> "Alread exisits with ID " + feedid + ", " + feed.getSiteid().getSite() + 
-                        " feed with title: " + feed.getTitle() + ", description " + feed.getDescription());
-            }    
-        }
-        
-        return created;
-    }
-    
     public boolean create(Feed feed, boolean onlyIfNoneExistsWithMatchingData) {
         
         boolean created = false;
 
-        try(Select<Integer> dao = this.getJpaContext().getDaoForSelect(Feed.class, Integer.class)) {
+        try(Select<Integer> dao = this.getJpaContext().getDaoForSelect(Integer.class)) {
         
             Integer found;
             
             if(onlyIfNoneExistsWithMatchingData && this.restrictSearchToDataColumns(dao, feed)) {
 
                 try{
-                    found = dao.select(Feed_.feedid).createQuery().setFirstResult(0).setMaxResults(1).getSingleResult();
+                    found = dao.from(Feed.class).select(Feed_.feedid).createQuery().setFirstResult(0).setMaxResults(1).getSingleResult();
                 }catch(NoResultException ignored) {
                     found = null;
                 }
@@ -211,19 +173,23 @@ public class FeedDao extends DaoBase {
                 found = null;
             }
             
+            final String siteName = feed.getSiteid() == null ? null : feed.getSiteid().getSite();
+            
             if(found == null) {
+
+                LOG.finer(() -> "Saving " + siteName + " feed titled: " + feed.getTitle());
 
                 dao.begin().persist(feed).commit();
                  
-                LOG.fine(() -> "Saving " + feed.getSiteid().getSite() + " title: " + feed.getTitle());
+                LOG.fine(() -> "Saved " + siteName + " feed titled: " + feed.getTitle());
                 
                 created = true;
                 
             }else{
                 
                 final Integer feedid = found;
-                LOG.fine(() -> "Alread exisits with ID " + feedid + ", " + feed.getSiteid().getSite() + 
-                        " feed with title: " + feed.getTitle() + ", description " + feed.getDescription());
+                LOG.fine(() -> "Alread exisits " + siteName + " feed with ID " + feedid + 
+                        ", title: " + feed.getTitle() + ", description " + feed.getDescription());
             }    
         }
         

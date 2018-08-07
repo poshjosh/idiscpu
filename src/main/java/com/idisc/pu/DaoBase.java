@@ -15,7 +15,7 @@
  */
 package com.idisc.pu;
 
-import com.bc.jpa.context.JpaContext;
+import com.bc.jpa.context.PersistenceUnitContext;
 import com.bc.jpa.dao.Criteria;
 import java.util.logging.Logger;
 import java.util.List;
@@ -36,9 +36,9 @@ import com.bc.jpa.dao.Select;
 public class DaoBase {
     private transient static final Logger LOG = Logger.getLogger(DaoBase.class.getName());
     
-  private final JpaContext jpaContext;
+  private final PersistenceUnitContext jpaContext;
 
-  public DaoBase(JpaContext jpaContext) {
+  public DaoBase(PersistenceUnitContext jpaContext) {
     this.jpaContext = jpaContext;
   }
     
@@ -167,7 +167,7 @@ public class DaoBase {
 
     public boolean isExisting(Class entityType, String column, Object value) {
         boolean found;
-        EntityManager em = this.jpaContext.getEntityManager(entityType);
+        EntityManager em = this.jpaContext.getEntityManager();
         try{
           Query query = em.createQuery(
                   "SELECT a."+column+" FROM "+entityType.getSimpleName()+" a WHERE a."+column+" = :"+column);
@@ -182,7 +182,7 @@ public class DaoBase {
         return found;
     }
   
-  public JpaContext getJpaContext() {
+  public PersistenceUnitContext getJpaContext() {
     return jpaContext;
   }
 }

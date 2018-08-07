@@ -1,9 +1,9 @@
 package com.idisc.pu;
 
 import com.bc.jpa.context.JpaContext;
+import com.bc.jpa.context.PersistenceUnitContext;
 import java.util.logging.Logger;
 import com.idisc.pu.entities.Country;
-import com.idisc.pu.entities.Feeduser;
 import com.idisc.pu.entities.Installation;
 import com.idisc.pu.entities.Installation_;
 import java.util.Calendar;
@@ -45,7 +45,7 @@ public class InstallationDao extends DaoBase {
 
     Installation output;
     
-    final JpaContext jpaContext = this.getJpaContext();
+    final PersistenceUnitContext jpaContext = this.getJpaContext();
 
     if (user != null) {
 
@@ -67,7 +67,7 @@ public class InstallationDao extends DaoBase {
 
           user.setInstallationList(list);
 
-          jpaContext.getDao(Feeduser.class).begin().mergeAndClose(user.getDelegate());
+          jpaContext.getDao().begin().mergeAndClose(user.getDelegate());
           
         }else{
          
@@ -91,7 +91,7 @@ public class InstallationDao extends DaoBase {
       } 
       if(output == null) {
 
-        output = jpaContext.getDao(Installation.class).findAndClose(Installation.class, installationid);
+        output = jpaContext.getDao().findAndClose(Installation.class, installationid);
 
         if(LOG.isLoggable(level)) {
           LOG.log(level, "For {0} = {1}, found: {2}", 
@@ -130,7 +130,7 @@ public class InstallationDao extends DaoBase {
 
         output.setFeeduserid(user == null ? null : user.getDelegate());
         
-        jpaContext.getDao(Installation.class).begin().persistAndClose(output);
+        jpaContext.getDao().begin().persistAndClose(output);
 
         if(LOG.isLoggable(level)) {
           LOG.log(level, "For: {0} = {1}, created: ", 
