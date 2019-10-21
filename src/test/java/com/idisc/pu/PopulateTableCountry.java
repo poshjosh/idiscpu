@@ -17,7 +17,7 @@
 package com.idisc.pu;
 
 import com.bc.io.CharFileIO;
-import com.bc.jpa.context.JpaContext;
+import com.bc.jpa.context.PersistenceUnitContext;
 import com.idisc.pu.entities.Country;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,15 +37,21 @@ import com.bc.jpa.dao.Update;
  */
 public class PopulateTableCountry extends TestStub{
     
+    private final StringBuilder insertQueries = new StringBuilder();
+    
+    private final String tableName = Country.class.getSimpleName().toLowerCase();
+    
     public static void main(String [] args) {
         try{
-            new PopulateTableCountry().execute();
+            final PopulateTableCountry action = new PopulateTableCountry();
+            action.execute(false);
+            System.out.println(action.insertQueries);
         }catch(IOException | ParseException e) {
             e.printStackTrace();
         }
     }
     
-    public void execute() throws MalformedURLException, IOException, ParseException {
+    public void execute(boolean updateDatabase) throws MalformedURLException, IOException, ParseException {
 
 //        JSONObject iso2ToName = getJson(new URL("http://country.io/names.json"));
 //        JSONObject iso2ToIso3 = getJson(new URL("http://country.io/iso3.json"));
@@ -58,11 +64,11 @@ public class PopulateTableCountry extends TestStub{
         JSONObject countries = (JSONObject)json.get("countries");
         JSONArray list = (JSONArray)countries.get("country");
         
-        final JpaContext jpaContext = this.getJpaContext();
+        final PersistenceUnitContext jpaContext = this.getPersistenceUnitContext();
         
-        try(Update<Country> dao = jpaContext.getDaoForUpdate(Country.class)) {
+        try(Update<Country> update = jpaContext.getDaoForUpdate(Country.class)) {
 
-            dao.begin();
+            update.begin();
 
             for(Object elem : list) {
 
@@ -73,21 +79,27 @@ public class PopulateTableCountry extends TestStub{
                 String name = (String)countryJson.get("countryName");
                 short numeric = Short.parseShort((String)countryJson.get("isoNumeric"));
 System.out.println(codeIso3+'\t'+name+'\t'+numeric+'\t'+codeIso2);            
+                insertQueries.append("\ninsert into `all9janews_newsdb`." + tableName + 
+                        " VALUES("+numeric+", '"+name+"', '"+codeIso2+"', '"+codeIso3+"');");
                 Country country = new Country();
                 country.setCodeIso2(codeIso2);
                 country.setCodeIso3(codeIso3);
                 country.setCountry(name);
                 country.setCountryid(numeric);
                 
-                Country found = dao.getEntityManager().find(Country.class, numeric);
+                Country found = update.getEntityManager().find(Country.class, numeric);
                 if(found != null) {
-                    dao.merge(country);
+                    update.merge(country);
                 }else{
-                    dao.persist(country);
+                    update.persist(country);
                 }
             }
 
-            dao.commit();
+            if(updateDatabase) {
+                update.commit();
+            }else{
+                update.getEntityManager().getTransaction().rollback();
+            }
         }
     }  
 

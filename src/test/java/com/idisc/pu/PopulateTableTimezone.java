@@ -17,7 +17,7 @@
 package com.idisc.pu;
 
 import com.bc.io.CharFileIO;
-import com.bc.jpa.context.JpaContext;
+import com.bc.jpa.context.PersistenceUnitContext;
 import com.idisc.pu.entities.Timezone;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,16 +40,20 @@ import com.bc.jpa.dao.Update;
  */
 public class PopulateTableTimezone extends TestStub{
     
+    private final StringBuilder insertQueries = new StringBuilder();
+    
     public static void main(String [] args) {
 //System.out.println(TimeZone.getTimeZone("EST5EDT"));
         try{
-            new PopulateTableTimezone().execute();
+            final PopulateTableTimezone action = new PopulateTableTimezone();
+            action.execute(false);
+            System.out.println(action.getInsertQueries());
         }catch(IOException | ParseException e) {
             e.printStackTrace();
         }
     }
     
-    public void execute() throws MalformedURLException, IOException, ParseException {
+    public void execute(boolean updateDatabase) throws MalformedURLException, IOException, ParseException {
         
         Path path = Paths.get(System.getProperty("user.home"), "Documents", 
                 "NetBeansProjects", "idiscpu", "src", "test", "java", "com", "idisc", "pu", "timezones.json"
@@ -58,11 +62,11 @@ public class PopulateTableTimezone extends TestStub{
         
         JSONArray timezones = (JSONArray)json.get("timezones");
         
-        final JpaContext jpaContext = this.getJpaContext();
+        final PersistenceUnitContext jpaContext = this.getPersistenceUnitContext();
         
-        try(Update<Timezone> dao = jpaContext.getDaoForUpdate(Timezone.class)) {
+        try(Update<Timezone> update = jpaContext.getDaoForUpdate(Timezone.class)) {
 
-            dao.begin();
+            update.begin();
 
             short i;
             try{
@@ -87,17 +91,13 @@ System.out.println("Abbreviation: "+abbr+".\tNames: "+utcList);
 
                 if(utcList == null || utcList.isEmpty()) {
                     
-                    String sval = (String)timezoneJson.get("value");
-                    TimeZone tz = TimeZone.getTimeZone(sval);
-if("GMT".equals(sval) && "GMT".equals(tz.getID())) {
-    System.out.println("----------------- Skipping value: "+sval); 
-}
-
-                    this.createAndUpdateDatabase(dao, i, abbr, sval);
+                    this.createAndUpdateDatabase(update, i, abbr, timezoneJson);
                     
                     ++i;
                     
                 }else{
+                    
+                    int updated = 0;
                     
                     for(Object utc : utcList) {
 
@@ -108,16 +108,38 @@ System.out.println("----------------- Skipping "+sval);
                             continue;
                         }
 
-                        this.createAndUpdateDatabase(dao, i, abbr, sval);
+                        this.createAndUpdateDatabase(update, i, abbr, sval);
+                        
+                        ++updated;
 
+                        ++i;
+                    }
+                    
+                    if(updated == 0) {
+
+                        this.createAndUpdateDatabase(update, i, abbr, timezoneJson);
+                        
                         ++i;
                     }
                 }
             }
 
-            dao.commit();
+            if(updateDatabase) {
+                update.commit();
+            }else{
+                update.getEntityManager().getTransaction().rollback();
+            }
         }
     }  
+    
+    private void createAndUpdateDatabase(Update update, short id, String abbr, JSONObject timezoneJson) {
+        String sval = (String)timezoneJson.get("value");
+        TimeZone tz = TimeZone.getTimeZone(sval);
+if("GMT".equals(sval) && "GMT".equals(tz.getID())) {
+System.out.println("----------------- Skipping value: "+sval); 
+}
+        this.createAndUpdateDatabase(update, id, abbr, sval);
+    }
 
     private Timezone createAndUpdateDatabase(
             Update dao, short id, String abbr, String sval) {
@@ -132,6 +154,8 @@ System.out.println("----------------- Skipping "+sval);
     }
     
     private Timezone createTimezone(short id, String abbr, String sval) {
+//insert into `all9janews_newsdb`.timezone VALUES(1, 'DST', 'Dateline Standard Time'); 
+        insertQueries.append("\ninsert into `all9janews_newsdb`.timezone VALUES("+id+", '"+abbr+"', '"+sval+"');");
         Timezone timezone = new Timezone();
         timezone.setTimezoneid(id);
         timezone.setAbbreviation(abbr);
@@ -152,5 +176,9 @@ System.out.println("----------------- Skipping "+sval);
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject)parser.parse(jsonChars.toString());
         return json;
+    }
+
+    public StringBuilder getInsertQueries() {
+        return insertQueries;
     }
 }

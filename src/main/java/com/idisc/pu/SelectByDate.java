@@ -1,8 +1,8 @@
 package com.idisc.pu;
 
 import com.bc.functions.GetDateOfAge;
-import com.bc.jpa.context.PersistenceUnitContext;
 import com.bc.jpa.dao.Criteria.ComparisonOperator;
+import com.bc.jpa.dao.JpaObjectFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,11 +27,11 @@ public class SelectByDate<E, I> implements Serializable {
     
     private transient static final Logger LOG = Logger.getLogger(SelectByDate.class.getName());
 
-    private final PersistenceUnitContext puContext;
+    private final JpaObjectFactory puContext;
     
     private final Class<E> entityClass;
     
-    public SelectByDate(PersistenceUnitContext jpaContext, Class<E> entityClass) {
+    public SelectByDate(JpaObjectFactory jpaContext, Class<E> entityClass) {
     
         this.puContext = Objects.requireNonNull(jpaContext);
         

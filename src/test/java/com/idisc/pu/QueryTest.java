@@ -16,7 +16,7 @@
 
 package com.idisc.pu;
 
-import com.bc.jpa.context.JpaContext;
+import com.bc.jpa.context.PersistenceUnitContext;
 import com.bc.jpa.dao.Select;
 import com.idisc.pu.entities.Site;
 import com.idisc.pu.entities.Site_;
@@ -31,8 +31,8 @@ public class QueryTest extends TestStub {
     }
     
     public void test() {
-        final JpaContext jpaContext = this.getJpaContext();
-        final Select<Site> select = jpaContext.getDao().forSelect(Site.class);
+        final PersistenceUnitContext jpaContext = this.getPersistenceUnitContext();
+        final Select<Site> select = jpaContext.getDaoForSelect(Site.class);
         final Site site = select.from(Site.class)
                 .where(Site_.site, "naij")
                 .and().where(Site_.sitetypeid, "web")

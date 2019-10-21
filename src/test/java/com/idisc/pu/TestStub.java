@@ -1,17 +1,24 @@
 package com.idisc.pu;
 
+import com.bc.jpa.dao.util.EntityMemberAccess;
 import com.idisc.pu.entities.Feed;
-import com.bc.jpa.controller.EntityController;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import com.bc.jpa.context.JpaContext;
+import com.bc.jpa.context.PersistenceContext;
+import com.bc.jpa.context.PersistenceUnitContext;
+import com.bc.jpa.dao.JpaObjectFactory;
+import com.bc.jpa.functions.GetMapForEntity;
+import com.bc.jpa.dao.sql.MySQLDateTimePatterns;
+import com.bc.util.Util;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.nio.file.Paths;
+import java.util.logging.LogManager;
 
 
 /**
@@ -28,30 +35,92 @@ import java.net.URISyntaxException;
  * @since    2.0
  */
 public class TestStub {
+    static{
+        final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try(InputStream in = cl.getResourceAsStream("META-INF/logging.properties")) {
+            LogManager.getLogManager().readConfiguration(in);
+        }catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
     
-    private JpaContext jpaContext;
+    private static final Map<URI, PersistenceContext> persistenceContextMap = new HashMap<>();
+    
+    public Map<String, String> getDefaultOutputParameters() {
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("installationid", "2");
+        parameters.put("installationkey", "abdb33ee-a09e-4d7d-b861-311ee7061325");
+        parameters.put("screenname", "user_2");
+        parameters.put("format", "application/json");
+        parameters.put("versionCode", "58");
+        parameters.put("tidy", "true");
+        return parameters;
+    }
     
     public boolean isRemote() {
         return false;
     }
     
-    public JpaContext getJpaContext() {
+    public PersistenceContext getPersistenceContextProductionMode() {
+        final String path = this.getSrcDir() + "/main/resources/META-INF/persistence.xml";
+        final PersistenceContext output = this.getPersistenceContext(Paths.get(path).toUri());
+        return output;
+    }
+    
+    public PersistenceContext getPersistenceContextDevMode() {
+        final String path = this.getSrcDir() + "/test/resources/META-INF/persistence.xml";
+        final PersistenceContext output = this.getPersistenceContext(Paths.get(path).toUri());
+        return output;
+    }
+
+    public String getSrcDir() {
+        final String userHome = System.getProperty("user.home");
+        final String srcDir = userHome + "/Documents/NetBeansProjects/idiscpu/src";
+        return srcDir;
+    }
+    
+    public PersistenceUnitContext getPersistenceUnitContext() {
+        return this.getPersistenceContext("META-INF/persistence.xml").getContext(PersistenceNames.PERSISTENCE_UNIT_NAME);
+    }
+
+    public PersistenceContext getPersistenceContext() {
+        return this.getPersistenceContext("META-INF/persistence.xml");
+    }
+    
+    public PersistenceContext getPersistenceContext(String resourceName) {
+        return this.getPersistenceContext(this.getUri(resourceName));
+    }
+    
+    public PersistenceContext getPersistenceContext(URI uri) {
+        PersistenceContext jpaContext = persistenceContextMap.getOrDefault(uri, null);
         if(jpaContext == null) {
-            try{
-                final URI uri = Thread.currentThread().getContextClassLoader().getResource("META-INF/persistence.xml").toURI();
-//                final URI uri = Paths.get(System.getProperty("user.home"), "Documents/NetBeansProjects/idiscpu/src/test/resources/META-INF/persistence.xml").toUri();
-                jpaContext = new IdiscJpaContext(uri);
-            }catch(URISyntaxException | IOException e) {
-                throw new RuntimeException(e);
-            }
+            jpaContext = new IdiscPersistenceContext(uri, new MySQLDateTimePatterns());
+            persistenceContextMap.put(uri, jpaContext);
         }
         return jpaContext;
     }
-    
-    public EntityController getEntityController(Class aClass) {
-        return this.getJpaContext().getEntityController(aClass);
+
+    public JpaObjectFactory createJpaObjectFactory() {
+        return this.createJpaObjectFactory(PersistenceNames.PERSISTENCE_UNIT_NAME);
     }
     
+    public JpaObjectFactory createJpaObjectFactory(String persistenceUnit) {
+//        try{
+            final String jpaPropsLocation = com.bc.idiscjpaconfig.Resources.JPA_PROPERTIES;
+            final JpaObjectFactory jpa = JpaObjectFactory.builder()
+                    .persistenceUnitName(persistenceUnit)
+                    .properties(jpaPropsLocation)
+                    .sqlVendor(JpaObjectFactory.Builder.SQL_VENDOR_MYSQL)
+                    .jpaVendor(JpaObjectFactory.Builder.JPA_VENDOR_ECLIPELINK)
+                    .build();
+            
+//            final JpaObjectFactory jpa = new IdiscJpaObjectFactoryDevmode(persistenceUnit, new MySQLDateTimePatterns());
+            return jpa;
+//        }catch(IOException e) {
+//            throw new RuntimeException(e);
+//        }
+    }
+
     public Class getDefaultEntityClass() {
         return Feed.class;
     }
@@ -59,24 +128,28 @@ public class TestStub {
     private List f;
     public List getFound() {
         if(f == null) {
-            f = this.getEntityController(this.getDefaultEntityClass()).find();
+            f = this.getPersistenceUnitContext().getDaoForSelect(this.getDefaultEntityClass()).findAllAndClose(this.getDefaultEntityClass());
         }
         return f;
     }
     
     protected Map extractMap(Object entity) {
-        Map m = getEntityController(getDefaultEntityClass()).toMap(entity);
-        String idColumn = getEntityController(getDefaultEntityClass()).getIdColumnName();
-        this.checkNull(m.get(idColumn), "Map extracted from entity does not contain idColumn: "+idColumn+", Map.keySet"+m.keySet());
-        return m;
+        final PersistenceUnitContext jpa = this.getPersistenceUnitContext();
+        final Map entityMap = new GetMapForEntity(true).apply(entity);
+        final String idColumn = jpa.getMetaData().getIdColumnName(this.getDefaultEntityClass());
+        this.checkNull(entityMap.get(idColumn), "Map extracted from entity does not contain idColumn: "+idColumn+", Map.keySet"+entityMap.keySet());
+        return entityMap;
     }
     
     protected Object insertFromRandom() throws Exception {
-        Object oldEntity = this.getRandomEntity();
-        Map m = this.extractMap(oldEntity);
-        Object newEntity = getEntityController(getDefaultEntityClass()).create(m, true);
-        getEntityController(getDefaultEntityClass()).setId(newEntity, null);
-        getEntityController(getDefaultEntityClass()).persist(newEntity);
+        final Object oldEntity = this.getRandomEntity();
+        final Map entityMap = this.extractMap(oldEntity);
+        final Class entityClass = this.getDefaultEntityClass();
+        final PersistenceUnitContext jpa = this.getPersistenceUnitContext();
+        final EntityMemberAccess ema = jpa.getEntityMemberAccess(entityClass);
+        final Object newEntity = ema.create(entityMap, true);
+        ema.setId(newEntity, null);
+        jpa.getDao().persistAndClose(newEntity);
         return newEntity;
     }
 
@@ -176,7 +249,66 @@ public class TestStub {
         return list;
     }
     
+    
+    public void printStats(String prefix, long tb4, long mb4) {
+        System.out.println(prefix);
+        System.out.println("Consumed. time: " +
+                (System.currentTimeMillis() - tb4) +
+                ", memory: " + Util.usedMemory(mb4));
+        this.printMemoryStats();
+    }
+    
+    public void printMemoryStats() {
+        System.out.println("Memory. free: " + Runtime.getRuntime().freeMemory() + 
+                ", available: " + Util.availableMemory());
+    }
+
+    public void sleep(int timeoutSeconds) {
+        for(int i=0; i<timeoutSeconds; i++) {
+            try{
+                Thread.sleep(1000);
+            }catch(InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     protected void log(Object msg) {
 System.out.println(msg);        
     }
+
+    public URI getUri(String resourceName) {
+        try{
+            final URI uri = Thread.currentThread().getContextClassLoader()
+                    .getResource(resourceName).toURI();
+            System.out.println("Resource: " + resourceName + ", URI: " + uri);
+            return uri;
+        }catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+/**
+ *
+ * 
+    public URI getJpaUri(String resourceName) {
+        try{
+            final URI uri;
+            if("META-INF/persistence.xml".equals(resourceName)) {
+                uri = Thread.currentThread().getContextClassLoader()
+                    .getResource(resourceName).toURI();
+            }else{
+                final Path path = Paths.get(System.getProperty("user.home"), "Documents", 
+                        "NetBeansProjects", "idiscpu", "src", "test", "resources", resourceName);
+                uri = path.toFile().toURI();
+            }
+            System.out.println("Persistence config URI: " + uri);
+            return uri;
+        }catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+ * 
+ * 
+ */
 }

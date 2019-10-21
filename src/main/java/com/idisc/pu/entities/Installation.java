@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,31 +35,20 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:04 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:38 PM
  */
 @Entity
 @Table(name = "installation")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Installation.findAll", query = "SELECT i FROM Installation i"),
-    @NamedQuery(name = "Installation.findByInstallationid", query = "SELECT i FROM Installation i WHERE i.installationid = :installationid"),
-    @NamedQuery(name = "Installation.findByInstallationkey", query = "SELECT i FROM Installation i WHERE i.installationkey = :installationkey"),
-    @NamedQuery(name = "Installation.findByScreenname", query = "SELECT i FROM Installation i WHERE i.screenname = :screenname"),
-    @NamedQuery(name = "Installation.findByFirstinstallationdate", query = "SELECT i FROM Installation i WHERE i.firstinstallationdate = :firstinstallationdate"),
-    @NamedQuery(name = "Installation.findByLastinstallationdate", query = "SELECT i FROM Installation i WHERE i.lastinstallationdate = :lastinstallationdate"),
-    @NamedQuery(name = "Installation.findByFirstsubscriptiondate", query = "SELECT i FROM Installation i WHERE i.firstsubscriptiondate = :firstsubscriptiondate"),
-    @NamedQuery(name = "Installation.findByLastsubscriptiondate", query = "SELECT i FROM Installation i WHERE i.lastsubscriptiondate = :lastsubscriptiondate"),
-    @NamedQuery(name = "Installation.findByDatecreated", query = "SELECT i FROM Installation i WHERE i.datecreated = :datecreated"),
-    @NamedQuery(name = "Installation.findByTimemodified", query = "SELECT i FROM Installation i WHERE i.timemodified = :timemodified"),
-    @NamedQuery(name = "Installation.findByExtradetails", query = "SELECT i FROM Installation i WHERE i.extradetails = :extradetails")})
+    @NamedQuery(name = "Installation.findAll", query = "SELECT i FROM Installation i")})
 public class Installation implements Serializable {
-
-    @OneToMany(mappedBy = "installationid")
-    private List<Searchquery> searchqueryList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -68,16 +57,26 @@ public class Installation implements Serializable {
     @Column(name = "installationid")
     private Integer installationid;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
     @Column(name = "installationkey")
     private String installationkey;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
     @Column(name = "screenname")
     private String screenname;
+    @Basic(optional = true)
+    @Size(min = 1, max = 32)
+    @Column(name = "ipaddress")
+    private String ipaddress;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "firstinstallationdate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date firstinstallationdate;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "lastinstallationdate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastinstallationdate;
@@ -88,13 +87,16 @@ public class Installation implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastsubscriptiondate;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "datecreated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datecreated;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "timemodified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timemodified;
+    @Size(max = 500)
     @Column(name = "extradetails")
     private String extradetails;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "installationid", fetch = FetchType.LAZY)
@@ -112,9 +114,11 @@ public class Installation implements Serializable {
     @JoinColumn(name = "feeduserid", referencedColumnName = "feeduserid")
     @ManyToOne(fetch = FetchType.LAZY)
     private Feeduser feeduserid;
-    @JoinColumn(name = "countryid", referencedColumnName = "countryid")
+    @JoinColumn(name = "locationid", referencedColumnName = "locationid")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Country countryid;
+    private Location locationid;
+    @OneToMany(mappedBy = "installationid", fetch = FetchType.LAZY)
+    private List<Searchquery> searchqueryList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "installationid", fetch = FetchType.LAZY)
     private List<Comment> commentList;
 
@@ -157,6 +161,14 @@ public class Installation implements Serializable {
 
     public void setScreenname(String screenname) {
         this.screenname = screenname;
+    }
+
+    public String getIpaddress() {
+        return ipaddress;
+    }
+
+    public void setIpaddress(String ipaddress) {
+        this.ipaddress = ipaddress;
     }
 
     public Date getFirstinstallationdate() {
@@ -277,12 +289,21 @@ public class Installation implements Serializable {
         this.feeduserid = feeduserid;
     }
 
-    public Country getCountryid() {
-        return countryid;
+    public Location getLocationid() {
+        return locationid;
     }
 
-    public void setCountryid(Country countryid) {
-        this.countryid = countryid;
+    public void setLocationid(Location locationid) {
+        this.locationid = locationid;
+    }
+
+    @XmlTransient
+    public List<Searchquery> getSearchqueryList() {
+        return searchqueryList;
+    }
+
+    public void setSearchqueryList(List<Searchquery> searchqueryList) {
+        this.searchqueryList = searchqueryList;
     }
 
     @XmlTransient
@@ -317,15 +338,6 @@ public class Installation implements Serializable {
     @Override
     public String toString() {
         return "com.idisc.pu.entities.Installation[ installationid=" + installationid + " ]";
-    }
-
-    @XmlTransient
-    public List<Searchquery> getSearchqueryList() {
-        return searchqueryList;
-    }
-
-    public void setSearchqueryList(List<Searchquery> searchqueryList) {
-        this.searchqueryList = searchqueryList;
     }
 
 }

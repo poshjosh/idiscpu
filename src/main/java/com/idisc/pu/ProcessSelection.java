@@ -16,7 +16,7 @@
 
 package com.idisc.pu;
 
-import com.bc.jpa.context.PersistenceUnitContext;
+import com.bc.jpa.dao.JpaObjectFactory;
 import com.bc.jpa.dao.Select;
 import com.bc.task.AbstractStoppableTask;
 import java.util.List;
@@ -45,7 +45,7 @@ public class ProcessSelection<E> extends AbstractStoppableTask<Integer> {
     
     private int succeeded;
     
-    private final PersistenceUnitContext persistenceUnitContext;
+    private final JpaObjectFactory persistenceUnitContext;
     
     private final Function<Select<E>, Select<E>> formatter;
     
@@ -54,7 +54,7 @@ public class ProcessSelection<E> extends AbstractStoppableTask<Integer> {
     private final Class<E> entityClass;
     
     public ProcessSelection(
-            PersistenceUnitContext persistenceUnitContext, 
+            JpaObjectFactory persistenceUnitContext, 
             Function<Select<E>, Select<E>> formatter,
             Consumer<List<E>> batchConsumer,
             Class<E> entityClass,
@@ -147,7 +147,7 @@ public class ProcessSelection<E> extends AbstractStoppableTask<Integer> {
         return succeeded;
     }
 
-    public PersistenceUnitContext getPersistenceUnitContext() {
+    public JpaObjectFactory getJpaContext() {
         return persistenceUnitContext;
     }
 

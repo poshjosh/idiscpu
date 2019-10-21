@@ -44,6 +44,15 @@ public class FeedComparatorUserHitsOnSite extends CompareByScore<Feed> implement
   
   public FeedComparatorUserHitsOnSite(
           EntityManager entityManager,
+          Map<Pattern, Integer> elite, 
+          long valueToAddPerHit,
+          long maxPossibleValueToAddPerHit, 
+          boolean reverseOrder) { 
+    this(entityManager, null, elite, valueToAddPerHit, maxPossibleValueToAddPerHit, reverseOrder);      
+  }
+  
+  public FeedComparatorUserHitsOnSite(
+          EntityManager entityManager,
           Installation installation, 
           Map<Pattern, Integer> elite, 
           long valueToAddPerHit,

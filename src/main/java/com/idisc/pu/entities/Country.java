@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,41 +27,42 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:02 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:37 PM
  */
 @Entity
 @Table(name = "country")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Country.findAll", query = "SELECT c FROM Country c"),
-    @NamedQuery(name = "Country.findByCountryid", query = "SELECT c FROM Country c WHERE c.countryid = :countryid"),
-    @NamedQuery(name = "Country.findByCountry", query = "SELECT c FROM Country c WHERE c.country = :country"),
-    @NamedQuery(name = "Country.findByCodeIso2", query = "SELECT c FROM Country c WHERE c.codeIso2 = :codeIso2"),
-    @NamedQuery(name = "Country.findByCodeIso3", query = "SELECT c FROM Country c WHERE c.codeIso3 = :codeIso3")})
+    @NamedQuery(name = "Country.findAll", query = "SELECT c FROM Country c")})
 public class Country implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
+    @NotNull
     @Column(name = "countryid")
     private Short countryid;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
     @Column(name = "country")
     private String country;
+    @Size(max = 2)
     @Column(name = "codeIso2")
     private String codeIso2;
+    @Size(max = 3)
     @Column(name = "codeIso3")
     private String codeIso3;
     @OneToMany(mappedBy = "country", fetch = FetchType.LAZY)
     private List<Localaddress> localaddressList;
     @OneToMany(mappedBy = "countryid", fetch = FetchType.LAZY)
     private List<Site> siteList;
-    @OneToMany(mappedBy = "countryid", fetch = FetchType.LAZY)
-    private List<Installation> installationList;
 
     public Country() {
     }
@@ -123,15 +124,6 @@ public class Country implements Serializable {
 
     public void setSiteList(List<Site> siteList) {
         this.siteList = siteList;
-    }
-
-    @XmlTransient
-    public List<Installation> getInstallationList() {
-        return installationList;
-    }
-
-    public void setInstallationList(List<Installation> installationList) {
-        this.installationList = installationList;
     }
 
     @Override

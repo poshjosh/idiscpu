@@ -1,0 +1,25 @@
+Sep 15, 2018 1:45:28 AM com.idisc.core.functions.GetSubListImpl apply
+FINE: All sites: [vanguardngr, naij, ngrguardiannews, sunnewsonline, bellanaija, dailytrust, thisday, punchng, saharareporters, channelstv_headlines, aitonline_news, lindaikeji.blogspot, gistmania, thenewsminute]
+From offset: 1, sites: [naij, ngrguardiannews, sunnewsonline, bellanaija]
+
+Sep 15, 2018 1:45:29 AM com.idisc.pu.JpaUpdateListener logLeakedConnections
+FINE: 2 connections leaked. After load: com.idisc.pu.entities.Timezone[ timezoneid=0 ]
+
+Sep 15, 2018 1:45:30 AM com.idisc.pu.JpaUpdateListener logLeakedConnections
+FINE: 3 connections leaked. After load: com.idisc.pu.entities.Country[ countryid=566 ]
+... Repeat many times
+
+Sep 15, 2018 1:45:33 AM com.idisc.core.SubmitTasks doCall
+FINE: Timeout: 720 SECONDS, Max concurrent: 2, Tasks: [ngrguardiannews, sunnewsonline, bellanaija, naij]
+Sep 15, 2018 1:45:33 AM com.idisc.core.extraction.ScrapContextImpl getConfig
+INFO: For ScrapWebConfig[ngrguardiannews], timeout per site: 180 SECONDS, from: com.bc.timespent.TimeSpentImpl@976595c5{Start-time: 1534439709443, total-time: 338897 milliseconds, TimeSpentArray(millis)=[7263, 4132, 3641]}
+
+Sep 15, 2018 1:51:40 AM com.idisc.pu.JpaUpdateListener logLeakedConnections
+FINE: 4 connections leaked. After persist: com.idisc.pu.entities.Feed[ feedid=277 ]
+Sep 15, 2018 1:51:40 AM com.idisc.pu.JpaUpdateListener logLeakedConnections
+FINE: 2 connections leaked. After persist: com.idisc.pu.entities.Feed[ feedid=278 ]
+Sep 15, 2018 1:51:40 AM com.idisc.pu.FeedDao create
+FINE: Saved bellanaija feed titled: Issa Rae, Tiffany Haddish, Paris Hilton, Childish Gambino attend Rihanna's 4th Annual Diamond Ball for the Clara Lionel Foundation - BellaNaija
+... Some more saved
+Sep 15, 2018 1:51:42 AM com.idisc.pu.JpaUpdateListener logLeakedConnections
+FINE: 3 connections leaked. After persist: com.idisc.pu.entities.Feed[ feedid=279 ]

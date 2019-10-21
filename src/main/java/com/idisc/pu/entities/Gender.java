@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,27 +27,30 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:37 PM
  */
 @Entity
 @Table(name = "gender")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Gender.findAll", query = "SELECT g FROM Gender g"),
-    @NamedQuery(name = "Gender.findByGenderid", query = "SELECT g FROM Gender g WHERE g.genderid = :genderid"),
-    @NamedQuery(name = "Gender.findByGender", query = "SELECT g FROM Gender g WHERE g.gender = :gender")})
+    @NamedQuery(name = "Gender.findAll", query = "SELECT g FROM Gender g")})
 public class Gender implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
+    @NotNull
     @Column(name = "genderid")
     private Short genderid;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 6)
     @Column(name = "gender")
     private String gender;
     @OneToMany(mappedBy = "gender", fetch = FetchType.LAZY)

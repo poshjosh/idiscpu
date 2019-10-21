@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,30 +33,18 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:01 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:36 PM
  */
 @Entity
 @Table(name = "archivedfeed")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Archivedfeed.findAll", query = "SELECT a FROM Archivedfeed a"),
-    @NamedQuery(name = "Archivedfeed.findByArchivedfeedid", query = "SELECT a FROM Archivedfeed a WHERE a.archivedfeedid = :archivedfeedid"),
-    @NamedQuery(name = "Archivedfeed.findByFeedid", query = "SELECT a FROM Archivedfeed a WHERE a.feedid = :feedid"),
-    @NamedQuery(name = "Archivedfeed.findByRawid", query = "SELECT a FROM Archivedfeed a WHERE a.rawid = :rawid"),
-    @NamedQuery(name = "Archivedfeed.findByUrl", query = "SELECT a FROM Archivedfeed a WHERE a.url = :url"),
-    @NamedQuery(name = "Archivedfeed.findByImageurl", query = "SELECT a FROM Archivedfeed a WHERE a.imageurl = :imageurl"),
-    @NamedQuery(name = "Archivedfeed.findByAuthor", query = "SELECT a FROM Archivedfeed a WHERE a.author = :author"),
-    @NamedQuery(name = "Archivedfeed.findByTitle", query = "SELECT a FROM Archivedfeed a WHERE a.title = :title"),
-    @NamedQuery(name = "Archivedfeed.findByKeywords", query = "SELECT a FROM Archivedfeed a WHERE a.keywords = :keywords"),
-    @NamedQuery(name = "Archivedfeed.findByCategories", query = "SELECT a FROM Archivedfeed a WHERE a.categories = :categories"),
-    @NamedQuery(name = "Archivedfeed.findByDescription", query = "SELECT a FROM Archivedfeed a WHERE a.description = :description"),
-    @NamedQuery(name = "Archivedfeed.findByFeeddate", query = "SELECT a FROM Archivedfeed a WHERE a.feeddate = :feeddate"),
-    @NamedQuery(name = "Archivedfeed.findByDatecreated", query = "SELECT a FROM Archivedfeed a WHERE a.datecreated = :datecreated"),
-    @NamedQuery(name = "Archivedfeed.findByTimemodified", query = "SELECT a FROM Archivedfeed a WHERE a.timemodified = :timemodified"),
-    @NamedQuery(name = "Archivedfeed.findByExtradetails", query = "SELECT a FROM Archivedfeed a WHERE a.extradetails = :extradetails")})
+    @NamedQuery(name = "Archivedfeed.findAll", query = "SELECT a FROM Archivedfeed a")})
 public class Archivedfeed implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -66,40 +54,55 @@ public class Archivedfeed implements Serializable {
     @Column(name = "archivedfeedid")
     private Integer archivedfeedid;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "feedid")
     private int feedid;
+    @Size(max = 100)
     @Column(name = "rawid")
     private String rawid;
+    @Size(max = 1000)
     @Column(name = "url")
     private String url;
+    @Size(max = 1000)
     @Column(name = "imageurl")
     private String imageurl;
+    @Size(max = 100)
     @Column(name = "author")
     private String author;
+    @Size(max = 500)
     @Column(name = "title")
     private String title;
+    @Size(max = 1000)
     @Column(name = "keywords")
     private String keywords;
+    @Size(max = 1000)
     @Column(name = "categories")
     private String categories;
+    @Size(max = 1000)
     @Column(name = "description")
     private String description;
     @Basic(optional = false)
+    @NotNull
     @Lob
+    @Size(min = 1, max = 65535)
     @Column(name = "content")
     private String content;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "feeddate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date feeddate;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "datecreated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datecreated;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "timemodified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timemodified;
+    @Size(max = 500)
     @Column(name = "extradetails")
     private String extradetails;
     @JoinColumn(name = "siteid", referencedColumnName = "siteid")

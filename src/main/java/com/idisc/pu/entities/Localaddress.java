@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,26 +34,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:37 PM
  */
 @Entity
 @Table(name = "localaddress")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Localaddress.findAll", query = "SELECT l FROM Localaddress l"),
-    @NamedQuery(name = "Localaddress.findByLocaladdressid", query = "SELECT l FROM Localaddress l WHERE l.localaddressid = :localaddressid"),
-    @NamedQuery(name = "Localaddress.findByStateOrRegion", query = "SELECT l FROM Localaddress l WHERE l.stateOrRegion = :stateOrRegion"),
-    @NamedQuery(name = "Localaddress.findByCity", query = "SELECT l FROM Localaddress l WHERE l.city = :city"),
-    @NamedQuery(name = "Localaddress.findByCounty", query = "SELECT l FROM Localaddress l WHERE l.county = :county"),
-    @NamedQuery(name = "Localaddress.findByStreetAddress", query = "SELECT l FROM Localaddress l WHERE l.streetAddress = :streetAddress"),
-    @NamedQuery(name = "Localaddress.findByPostalCode", query = "SELECT l FROM Localaddress l WHERE l.postalCode = :postalCode"),
-    @NamedQuery(name = "Localaddress.findByDatecreated", query = "SELECT l FROM Localaddress l WHERE l.datecreated = :datecreated"),
-    @NamedQuery(name = "Localaddress.findByTimemodified", query = "SELECT l FROM Localaddress l WHERE l.timemodified = :timemodified"),
-    @NamedQuery(name = "Localaddress.findByExtradetails", query = "SELECT l FROM Localaddress l WHERE l.extradetails = :extradetails")})
+    @NamedQuery(name = "Localaddress.findAll", query = "SELECT l FROM Localaddress l")})
 public class Localaddress implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -62,24 +55,32 @@ public class Localaddress implements Serializable {
     @Basic(optional = false)
     @Column(name = "localaddressid")
     private Integer localaddressid;
+    @Size(max = 50)
     @Column(name = "stateOrRegion")
     private String stateOrRegion;
+    @Size(max = 50)
     @Column(name = "city")
     private String city;
+    @Size(max = 50)
     @Column(name = "county")
     private String county;
+    @Size(max = 50)
     @Column(name = "streetAddress")
     private String streetAddress;
+    @Size(max = 25)
     @Column(name = "postalCode")
     private String postalCode;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "datecreated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datecreated;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "timemodified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timemodified;
+    @Size(max = 500)
     @Column(name = "extradetails")
     private String extradetails;
     @JoinColumn(name = "country", referencedColumnName = "countryid")
@@ -87,6 +88,8 @@ public class Localaddress implements Serializable {
     private Country country;
     @OneToMany(mappedBy = "localaddressid", fetch = FetchType.LAZY)
     private List<Feeduser> feeduserList;
+    @OneToMany(mappedBy = "localaddress", fetch = FetchType.LAZY)
+    private List<Location> locationList;
 
     public Localaddress() {
     }
@@ -188,6 +191,15 @@ public class Localaddress implements Serializable {
 
     public void setFeeduserList(List<Feeduser> feeduserList) {
         this.feeduserList = feeduserList;
+    }
+
+    @XmlTransient
+    public List<Location> getLocationList() {
+        return locationList;
+    }
+
+    public void setLocationList(List<Location> locationList) {
+        this.locationList = locationList;
     }
 
     @Override

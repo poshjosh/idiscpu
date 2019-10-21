@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.idisc.pu;
+package com.idisc.pu.functions;
 
 import com.bc.functions.GetDateOfAge;
-import com.bc.jpa.context.PersistenceUnitContext;
+import com.bc.jpa.dao.JpaObjectFactory;
 import com.bc.jpa.dao.Select;
+import com.idisc.pu.ProcessSelection;
 import com.idisc.pu.comparator.CompareByScore;
 import com.idisc.pu.comparator.Scorer;
 import com.idisc.pu.comparator.feed.DefaultFeedScorer;
@@ -90,17 +91,17 @@ public class FetchItemsByAge implements Serializable, BiFunction<Long, TimeUnit,
     
     private final Scorer<Feed> scorer;
     
-    private final PersistenceUnitContext puContext;
+    private final JpaObjectFactory puContext;
 
     private ProcessSelection processSelection;
     
     private Date date;
 
-    public FetchItemsByAge(PersistenceUnitContext puContext) {
+    public FetchItemsByAge(JpaObjectFactory puContext) {
         this(puContext, new DefaultFeedScorer(), 10);
     }
     
-    public FetchItemsByAge(PersistenceUnitContext puContext, Scorer<Feed> scorer, int limit) {
+    public FetchItemsByAge(JpaObjectFactory puContext, Scorer<Feed> scorer, int limit) {
         this.puContext = Objects.requireNonNull(puContext);
         this.scorer = Objects.requireNonNull(scorer);
         this.limit = limit;
@@ -136,7 +137,8 @@ public class FetchItemsByAge implements Serializable, BiFunction<Long, TimeUnit,
                 LOG.fine(FetchItemsByAge.this.toString());
                 
             }catch(RuntimeException e) {
-                LOG.log(Level.WARNING, "Unexpected Exception", e); 
+                LOG.log(Level.WARNING, "T-" + Thread.currentThread().getName() + 
+                        ". Unexpected Exception", e); 
                 throw new RuntimeException();
             }    
         };
@@ -166,7 +168,8 @@ public class FetchItemsByAge implements Serializable, BiFunction<Long, TimeUnit,
                     LOG.finer(() -> "SELECTED. Score: " + score + ", Feed:: ID:" + score.feedid + ", title: " + feed.getTitle());                
                     return feed;
                 }catch(RuntimeException e) {
-                    LOG.log(Level.WARNING, "Unexpected Exception", e); 
+                    LOG.log(Level.WARNING, "T-" + Thread.currentThread().getName() + 
+                            ". Unexpected Exception", e); 
                     throw new RuntimeException();
                 }    
             };

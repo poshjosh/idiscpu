@@ -15,45 +15,54 @@
  */
 package com.idisc.pu;
 
-import com.bc.jpa.context.JpaContext;
+import com.bc.jpa.context.PersistenceUnitContext;
 import com.idisc.pu.entities.Installation;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import com.bc.jpa.dao.Select;
+import com.idisc.pu.entities.Comment;
+import com.idisc.pu.entities.Feeduser;
 
 /**
  * @author Josh
  */
-public class DaoServiceTest extends TestStub {
+public class DaoBaseTest extends TestStub {
     
-    public DaoServiceTest() { }
+    public DaoBaseTest() { }
 
     /**
      * Test of isExistingScreenname method, of class InstallationService.
      */
     @Test
     public void testIsExisting() {
-        
+       
         System.out.println("isExisting");
         
-//        this.isExisting(Installation.class, Installation_.screenname.getName(), String.class, 3);
-        this.isExisting(Installation.class, "screenname", String.class, 3);
+        this.isExisting(Installation.class, "screenname", String.class, 2);
+        
+        this.isExisting(Feeduser.class, "emailAddress", String.class, 2);
         
 //        this.isExisting(Feed.class, Feed_.feeddate.getName(), Date.class, 3);
     }
     
     private <E> void isExisting(Class cls, String col, Class<E> colType, int count) {
-        final JpaContext jpaContext = this.getJpaContext();
+        
+        final PersistenceUnitContext jpaContext = this.getPersistenceUnitContext();
+        
         final DaoBase instance = new DaoBase(jpaContext);
-        try(Select<E> dao = jpaContext.getDaoForSelect(cls, colType)) {
-            List<E> values = dao.select(col).createQuery().setMaxResults(count).getResultList();
+        
+        try(Select<E> select = jpaContext.getDaoForSelect(colType)) {
+            List<E> values = select.from(cls).select(col).createQuery().setMaxResults(count).getResultList();
             for(E value : values) {
-                final boolean expResult = true;
                 final boolean result = instance.isExisting(cls, col, value);
 System.out.println("Is existing: "+result+", "+col+"="+value+" in table: "+cls.getSimpleName());                
-                assertEquals(expResult, result);
+                assertTrue(result);
             }
         }
+        final String shouldNotExist = "busuruXAXBXCXDXE";
+        final boolean result = instance.isExisting(cls, col, shouldNotExist);
+System.out.println("Is existing: "+result+", "+col+"="+shouldNotExist+" in table: "+cls.getSimpleName());                
+        assertFalse(result);
     }
 }

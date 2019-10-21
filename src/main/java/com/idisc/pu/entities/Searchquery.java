@@ -21,6 +21,7 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,16 +37,13 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Jul 8, 2018 2:00:40 AM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:38 PM
  */
 @Entity
 @Table(name = "searchquery")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Searchquery.findAll", query = "SELECT s FROM Searchquery s"),
-    @NamedQuery(name = "Searchquery.findBySearchqueryid", query = "SELECT s FROM Searchquery s WHERE s.searchqueryid = :searchqueryid"),
-    @NamedQuery(name = "Searchquery.findBySearchquery", query = "SELECT s FROM Searchquery s WHERE s.searchquery = :searchquery"),
-    @NamedQuery(name = "Searchquery.findBySearchtime", query = "SELECT s FROM Searchquery s WHERE s.searchtime = :searchtime")})
+    @NamedQuery(name = "Searchquery.findAll", query = "SELECT s FROM Searchquery s")})
 public class Searchquery implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -65,7 +63,7 @@ public class Searchquery implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date searchtime;
     @JoinColumn(name = "installationid", referencedColumnName = "installationid")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Installation installationid;
 
     public Searchquery() {

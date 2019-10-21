@@ -1,6 +1,6 @@
 package com.idisc.pu;
 
-import com.bc.jpa.context.PersistenceUnitContext;
+import com.bc.jpa.dao.JpaObjectFactory;
 import com.idisc.pu.entities.Site;
 import com.idisc.pu.entities.Site_;
 import com.idisc.pu.entities.Sitetype;
@@ -11,7 +11,10 @@ import java.util.Objects;
 import com.bc.jpa.dao.Select;
 import com.idisc.pu.entities.Sitetype_;
 import java.util.Collections;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Aug 13, 2016 9:25:31 AM
@@ -22,29 +25,41 @@ public class SiteDao extends DaoBase {
     
   private static Timezone defaultTimezone;
   
-  public SiteDao(PersistenceUnitContext jpaContext) {
+  public SiteDao(JpaObjectFactory jpaContext) {
     super(jpaContext);
     if(defaultTimezone == null) {
-      defaultTimezone = jpaContext.getEntityManager().find(Timezone.class, (short)0);
+        final EntityManager em = jpaContext.getEntityManager();
+        try{
+            defaultTimezone = em.find(Timezone.class, (short)0);
+        }finally{
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
     }
   }  
 
-  public Integer getIdForSitename(String sitename) {
-    final Integer siteId;
-    try(Select<Integer> qb = this.getJpaContext().getDaoForSelect(Integer.class)) {
-        siteId = qb
-                .select(Site.class, Site_.siteid)
-                .where(Site_.site, sitename).createQuery().getSingleResult();
+  public Integer getIdForSitename(String sitename, Integer outputIfNone) {
+    Integer siteId;
+    try(Select<Integer> selector = this.getJpaContext().getDaoForSelect(Integer.class)) {
+        siteId = selector
+                .from(Site.class)
+                .select(Site_.siteid)
+                .where(Site_.site, sitename)
+                .createQuery().getSingleResult();
+    }catch(NoResultException e) {
+      LOG.log(Level.WARNING, "No Site named: {0}, found in database", sitename);    
+      siteId = null;
     }
-    return siteId;
+    return siteId == null ? outputIfNone : siteId;
   }  
 
   public Site from(String siteName, String sitetypeName, boolean createIfNone) {
-      return findSingle(siteName, sitetypeName, defaultTimezone, createIfNone);
+      return findSingle(siteName, this.getSitetype(sitetypeName), defaultTimezone, createIfNone);
   }
   
   public Site from(String siteName, String sitetypeName, Timezone timezone, boolean createIfNone) {
-    return this.findSingle(siteName, sitetypeName, timezone, createIfNone);
+    return this.findSingle(siteName, this.getSitetype(sitetypeName), timezone, createIfNone);
   }
 
   public Site from(String siteName, Sitetype sitetype, boolean createIfNone) {
@@ -56,7 +71,7 @@ public class SiteDao extends DaoBase {
   }
   
   protected Site findSingle(String siteName, Object sitetype, Timezone timezone, boolean createIfNone) {
-    
+      
     Objects.requireNonNull(siteName);
     Objects.requireNonNull(sitetype);
     Objects.requireNonNull(timezone);
@@ -65,11 +80,20 @@ public class SiteDao extends DaoBase {
     
     try(Select<Site> select = getJpaContext().getDaoForSelect(Site.class)) {
       
-      final Site found = select.from(Site.class)
-              .where(Site_.site, siteName)
-              .and().where(Site_.sitetypeid, sitetype)
-              .createQuery().getSingleResult();
+      Site found;
+      try{
+        found = select.from(Site.class)
+            .where(Site_.site, siteName)
+            .and().where(Site_.sitetypeid, sitetype)
+            .createQuery().getSingleResult();
+      }catch(NoResultException e) {
+        found = null;
+      }
       
+      final Site s = found;
+      LOG.fine(() -> "Site name: " + siteName + ", siteType: " + sitetype + 
+              ", create if none: " + createIfNone + ", site: " + s);
+    
       if(found == null) {
           
         if(createIfNone) {
@@ -81,10 +105,7 @@ public class SiteDao extends DaoBase {
           if(sitetype instanceof Sitetype) {
             type = (Sitetype)sitetype;
           }else{
-            type = this.getJpaContext().getDaoForSelect(Sitetype.class)
-                    .from(Sitetype.class)
-                    .where(Sitetype_.sitetype, sitetype.toString())
-                    .getSingleResultAndClose();
+            type = this.getSitetype(sitetype.toString());
           }
           output.setSitetypeid(type);
           output.setTimezoneid(timezone);
@@ -102,6 +123,13 @@ public class SiteDao extends DaoBase {
     }
     
     return output;
+  }
+  
+  public Sitetype getSitetype(String sitetypeName) {
+    final Sitetype sitetype = this.getJpaContext().getDaoForSelect(Sitetype.class)
+            .where(Sitetype_.sitetype, sitetypeName)
+            .getSingleResultAndClose();
+    return sitetype;
   }
   
   public List<Site> find(String siteName, Sitetype sitetype, Timezone timezone, boolean createIfNone) {

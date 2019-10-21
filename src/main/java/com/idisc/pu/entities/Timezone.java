@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,31 +28,35 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:37 PM
  */
 @Entity
 @Table(name = "timezone")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Timezone.findAll", query = "SELECT t FROM Timezone t"),
-    @NamedQuery(name = "Timezone.findByTimezoneid", query = "SELECT t FROM Timezone t WHERE t.timezoneid = :timezoneid"),
-    @NamedQuery(name = "Timezone.findByAbbreviation", query = "SELECT t FROM Timezone t WHERE t.abbreviation = :abbreviation"),
-    @NamedQuery(name = "Timezone.findByTimezonename", query = "SELECT t FROM Timezone t WHERE t.timezonename = :timezonename")})
+    @NamedQuery(name = "Timezone.findAll", query = "SELECT t FROM Timezone t")})
 public class Timezone implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
+    @NotNull
     @Column(name = "timezoneid")
     private Short timezoneid;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 8)
     @Column(name = "abbreviation")
     private String abbreviation;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 64)
     @Column(name = "timezonename")
     private String timezonename;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "timezoneid", fetch = FetchType.LAZY)

@@ -1,0 +1,163 @@
+cd C:\Users\Josh\Documents\NetBeansProjects\idiscpu; "JAVA_HOME=C:\\Program Files\\Java\\jdk1.8.0_144" cmd /c "\"\"C:\\Program Files\\NetBeans 8.1\\java\\maven\\bin\\mvn.bat\" -Dtest=com.idisc.pu.InstallationServiceTest -Dmaven.ext.class.path=\"C:\\Program Files\\NetBeans 8.1\\java\\maven-nblib\\netbeans-eventspy.jar;C:\\Program Files\\NetBeans 8.1\\java\\maven-nblib\\netbeans-cos.jar\" -Dfile.encoding=UTF-8 surefire:test\""
+Running NetBeans Compile On Save execution. Phase execution is skipped and output directories of dependency projects (with Compile on Save turned on) will be used instead of their jar artifacts.
+Scanning for projects...
+                                                                        
+------------------------------------------------------------------------
+Building idiscpu 1.0-SNAPSHOT
+------------------------------------------------------------------------
+
+--- maven-surefire-plugin:2.19.1:test (default-cli) @ idiscpu ---
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running com.idisc.pu.InstallationServiceTest
+from
+Persistence config URI: file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/META-INF/persistence.xml
+Nov 03, 2018 3:14:53 PM com.bc.jpa.functions.GetClassLoaderForPersistenceUri getAlternativeClassLoader
+FINE: ClassLoader to replace. Type: sun.misc.Launcher$AppClassLoader, instance: sun.misc.Launcher$AppClassLoader@6bc7c054
+Nov 03, 2018 3:14:53 PM com.bc.jpa.functions.GetClassLoaderForPersistenceUri getAlternativeClassLoader
+FINE: Using classloader: com.bc.jpa.classloaders.AlternativePersistenceURLClassLoader to load persistence '.xml' file
+Nov 03, 2018 3:14:53 PM com.bc.jpa.functions.GetClassLoaderForPersistenceUri apply
+INFO: 	URI: file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/META-INF/persistence.xml
+	ClassLoader: com.bc.jpa.classloaders.AlternativePersistenceURLClassLoader@1ff8b8f
+Nov 03, 2018 3:14:53 PM com.bc.jpa.metadata.PersistenceMetaDataImpl <init>
+FINE: Config uri: file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/META-INF/persistence.xml
+Nov 03, 2018 3:14:54 PM com.bc.xml.XmlUtil parse
+FINE: Doc URL: file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/META-INF/persistence.xml, Base URI: file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/META-INF/persistence.xml
+Nov 03, 2018 3:14:54 PM com.bc.xml.PersistenceXmlDomImpl getPersistenceUnitNames
+FINE: Persistence units: [idiscpu]
+Nov 03, 2018 3:14:54 PM com.bc.jpa.metadata.PersistenceMetaDataImpl <init>
+FINE: Persistence unit names: [idiscpu]
+Nov 03, 2018 3:14:54 PM com.bc.xml.PersistenceXmlDomImpl getClassNames
+FINE: Persistence unit: idiscpu, classes: [com.idisc.pu.entities.Applaunchlog, com.idisc.pu.entities.Site, com.idisc.pu.entities.Comment, com.idisc.pu.entities.Archivedfeed, com.idisc.pu.entities.Bookmarkfeed, com.idisc.pu.entities.Howdidyoufindus, com.idisc.pu.entities.Gender, com.idisc.pu.entities.Extractedemail, com.idisc.pu.entities.Location, com.idisc.pu.entities.Localaddress, com.idisc.pu.entities.Feed, com.idisc.pu.entities.Feedhit, com.idisc.pu.entities.Installation, com.idisc.pu.entities.Commentreplynotice, com.idisc.pu.entities.Country, com.idisc.pu.entities.Sitetype, com.idisc.pu.entities.Favoritefeed, com.idisc.pu.entities.Feeduser, com.idisc.pu.entities.Emailstatus, com.idisc.pu.entities.Timezone, com.idisc.pu.entities.Searchquery]
+Nov 03, 2018 3:14:54 PM com.bc.jpa.metadata.PersistenceMetaDataImpl <init>
+FINE: [com.bc.jpa.metadata.PersistenceUnitMetaDataImpl@2a18f23c]
+Nov 03, 2018 3:14:54 PM com.bc.jpa.dao.functions.EntityManagerFactoryCreatorImpl newInstance
+INFO: --------------------------------------------------
+Creating EntityManagerFactory for persistence unit: idiscpu
+Properties: []
+Nov 03, 2018 3:14:54 PM com.bc.jpa.dao.util.ContextClassLoaderAccessor set
+FINE: Setting Current Thread ContextClassLoader to: com.bc.jpa.classloaders.AlternativePersistenceURLClassLoader@1ff8b8f
+Nov 03, 2018 3:14:54 PM ArchiveFactoryImpl createArchive
+FINER: ENTRY file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/ META-INF/persistence.xml
+Nov 03, 2018 3:14:54 PM ArchiveFactoryImpl createArchive
+FINER: protocol = file
+Nov 03, 2018 3:14:54 PM DirectoryArchive DirectoryArchive
+FINER: ENTRY C:\Users\Josh\Documents\NetBeansProjects\idiscpu\target\test-classes
+Nov 03, 2018 3:14:54 PM DirectoryArchive DirectoryArchive
+FINER: rootURL = file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/
+Nov 03, 2018 3:14:54 PM ArchiveFactoryImpl createArchive
+FINER: RETURN DirectoryArchive(file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/)
+Nov 03, 2018 3:14:54 PM ArchiveFactoryImpl createArchive
+FINER: ENTRY file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/ null
+Nov 03, 2018 3:14:54 PM ArchiveFactoryImpl createArchive
+FINER: protocol = file
+Nov 03, 2018 3:14:54 PM DirectoryArchive DirectoryArchive
+FINER: ENTRY C:\Users\Josh\Documents\NetBeansProjects\idiscpu\target\test-classes
+Nov 03, 2018 3:14:54 PM DirectoryArchive DirectoryArchive
+FINER: rootURL = file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/
+Nov 03, 2018 3:14:54 PM ArchiveFactoryImpl createArchive
+FINER: RETURN DirectoryArchive(file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/)
+Nov 03, 2018 3:14:55 PM ArchiveFactoryImpl createArchive
+FINER: ENTRY file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/ null
+Nov 03, 2018 3:14:55 PM ArchiveFactoryImpl createArchive
+FINER: protocol = file
+Nov 03, 2018 3:14:55 PM DirectoryArchive DirectoryArchive
+FINER: ENTRY C:\Users\Josh\Documents\NetBeansProjects\idiscpu\target\test-classes
+Nov 03, 2018 3:14:55 PM DirectoryArchive DirectoryArchive
+FINER: rootURL = file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/
+Nov 03, 2018 3:14:55 PM ArchiveFactoryImpl createArchive
+FINER: RETURN DirectoryArchive(file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/)
+Nov 03, 2018 3:14:55 PM com.bc.jpa.dao.util.ContextClassLoaderAccessor set
+FINE: Setting Current Thread ContextClassLoader to: sun.misc.Launcher$AppClassLoader@6bc7c054
+[EL Info]: 2018-11-03 15:14:56.601--ServerSession(810557024)--EclipseLink, version: Eclipse Persistence Services - 2.7.1.v20171221-bd47e8f
+[EL Info]: connection: 2018-11-03 15:14:57.163--ServerSession(810557024)--/file:/C:/Users/Josh/Documents/NetBeansProjects/idiscpu/target/test-classes/_idiscpu login successful
+[EL Fine]: sql: 2018-11-03 15:14:57.241--ServerSession(810557024)--Connection(1680365850)--SELECT countryid, codeIso2, codeIso3, country FROM country WHERE (countryid = ?)
+	bind => [1 parameter bound]
+Nov 03, 2018 3:14:57 PM com.idisc.pu.InstallationDao from
+FINE: User: null
+Nov 03, 2018 3:14:57 PM com.idisc.pu.InstallationDao from
+FINE: User: null
+Nov 03, 2018 3:14:57 PM com.bc.jpa.metadata.PersistenceUnitNodeBuilderImpl build
+FINE: Persisence unit: idiscpu, catalogs: [null]
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitNodeBuilderImpl build
+FINE: Catalog: null, schemas: [null]
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitNodeBuilderImpl build
+FINE: Schema: null, tables: [applaunchlog, archivedfeed, bookmarkfeed, comment, commentreplynotice, country, emailstatus, extractedemail, favoritefeed, feed, feedhit, feeduser, gender, howdidyoufindus, installation, localaddress, location, searchquery, site, sitetype, timezone]
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Applaunchlog, Table: applaunchlog
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Site, Table: site
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Comment, Table: comment
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Archivedfeed, Table: archivedfeed
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Bookmarkfeed, Table: bookmarkfeed
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Howdidyoufindus, Table: howdidyoufindus
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Gender, Table: gender
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Extractedemail, Table: extractedemail
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Location, Table: location
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Localaddress, Table: localaddress
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Feed, Table: feed
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Feedhit, Table: feedhit
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Installation, Table: installation
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Commentreplynotice, Table: commentreplynotice
+Nov 03, 2018 3:14:58 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Country, Table: country
+Nov 03, 2018 3:14:59 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Sitetype, Table: sitetype
+Nov 03, 2018 3:14:59 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Favoritefeed, Table: favoritefeed
+Nov 03, 2018 3:14:59 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Feeduser, Table: feeduser
+Nov 03, 2018 3:14:59 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Emailstatus, Table: emailstatus
+Nov 03, 2018 3:14:59 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Timezone, Table: timezone
+Nov 03, 2018 3:14:59 PM com.bc.jpa.metadata.PersistenceUnitMetaDataImpl build
+FINE: Type: com.idisc.pu.entities.Searchquery, Table: searchquery
+[EL Fine]: sql: 2018-11-03 15:14:59.194--ServerSession(810557024)--Connection(1680365850)--SELECT installationid, datecreated, extradetails, firstinstallationdate, firstsubscriptiondate, installationkey, lastinstallationdate, lastsubscriptiondate, screenname, timemodified, feeduserid, locationid FROM installation WHERE (installationkey = ?)
+	bind => [1 parameter bound]
+Nov 03, 2018 3:14:59 PM com.idisc.pu.InstallationDao create
+FINE: User: null
+Nov 03, 2018 3:14:59 PM com.idisc.pu.InstallationDao create
+FINE: For: installationkey = 689455AAAAAAAAAAAAAAAAAAAAAAAAAAAA48EEA7, created: com.idisc.pu.entities.Installation[ installationid=null ]
+[EL Fine]: sql: 2018-11-03 15:14:59.209--ClientSession(626961003)--Connection(1680365850)--INSERT INTO localaddress (city, county, datecreated, extradetails, postalCode, stateOrRegion, streetAddress, timemodified, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	bind => [9 parameters bound]
+[EL Fine]: sql: 2018-11-03 15:14:59.256--ClientSession(626961003)--Connection(1680365850)--SELECT LAST_INSERT_ID()
+[EL Fine]: sql: 2018-11-03 15:14:59.256--ClientSession(626961003)--Connection(1680365850)--INSERT INTO location (datecreated, extradetails, latitude, longitude, timemodified, localaddress) VALUES (?, ?, ?, ?, ?, ?)
+	bind => [6 parameters bound]
+[EL Fine]: sql: 2018-11-03 15:14:59.256--ClientSession(626961003)--Connection(1680365850)--SELECT LAST_INSERT_ID()
+[EL Fine]: sql: 2018-11-03 15:14:59.256--ClientSession(626961003)--Connection(1680365850)--INSERT INTO installation (datecreated, extradetails, firstinstallationdate, firstsubscriptiondate, installationkey, lastinstallationdate, lastsubscriptiondate, screenname, timemodified, feeduserid, locationid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	bind => [11 parameters bound]
+[EL Fine]: sql: 2018-11-03 15:14:59.256--ClientSession(626961003)--Connection(1680365850)--SELECT LAST_INSERT_ID()
+Result: com.idisc.pu.entities.Installation[ installationid=2733 ]
+[EL Fine]: sql: 2018-11-03 15:14:59.303--ServerSession(810557024)--Connection(1680365850)--SELECT installationid, datecreated, extradetails, firstinstallationdate, firstsubscriptiondate, installationkey, lastinstallationdate, lastsubscriptiondate, screenname, timemodified, feeduserid, locationid FROM installation WHERE (installationkey = ?)
+	bind => [1 parameter bound]
+[EL Fine]: sql: 2018-11-03 15:14:59.303--ClientSession(511357840)--Connection(1680365850)--DELETE FROM installation WHERE (installationkey = ?)
+	bind => [1 parameter bound]
+1 UPDATED
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.671 sec - in com.idisc.pu.InstallationServiceTest
+
+Results :
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+------------------------------------------------------------------------
+BUILD SUCCESS
+------------------------------------------------------------------------
+Total time: 9.019s
+Finished at: Sat Nov 03 15:14:59 WAT 2018
+Final Memory: 7M/109M
+------------------------------------------------------------------------

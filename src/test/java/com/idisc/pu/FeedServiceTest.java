@@ -15,7 +15,7 @@
  */
 package com.idisc.pu;
 
-import com.bc.jpa.context.JpaContext;
+import com.bc.jpa.context.PersistenceUnitContext;
 import com.bc.jpa.dao.Criteria;
 import java.util.logging.Logger;
 import com.idisc.pu.entities.Feed;
@@ -27,9 +27,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import com.bc.jpa.dao.Select;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Josh
@@ -56,9 +71,9 @@ public class FeedServiceTest extends TestStub {
 //          throw new ServletException("Missing value for required parameter: 'table'");
         }
 
-        final JpaContext jpaContext = this.getJpaContext();
+        final PersistenceUnitContext jpaContext = this.getPersistenceUnitContext();
 
-        final Class entityType = jpaContext.getMetaData().findEntityClass(table);
+        final Class entityType = jpaContext.getMetaData().getEntityClass(table); //.findEntityClass(table);
 
         if (entityType == null) {
 //          throw new ServletException("Invalid value for required parameter: 'table'");
@@ -106,12 +121,12 @@ public class FeedServiceTest extends TestStub {
     private void testOld() {
         
         final int offset = 0;
-        final int limit = 2;
-        final boolean spreadOutput = true;
+        final int searchLimit = 2;
+        final int resultLimit = searchLimit * 3;
         
-        FeedDao instance = new FeedDao(this.getJpaContext());
+        FeedDao instance = new FeedDao(this.getPersistenceUnitContext());
 
-        final List<Feed> feeds = instance.getFeeds(offset, limit, spreadOutput);
+        final List<Feed> feeds = instance.getFeeds(offset, searchLimit, resultLimit);
 
 //        final Site site = this.getJpaContext().getDaoForSelect(Site.class).findAndClose(28);
 //        List<Feed> feeds = Arrays.asList(this.getFeed1(site), this.getFeed2(site));

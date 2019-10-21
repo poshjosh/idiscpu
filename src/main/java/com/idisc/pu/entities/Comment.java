@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,23 +35,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:04 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:38 PM
  */
 @Entity
 @Table(name = "comment")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Comment.findAll", query = "SELECT c FROM Comment c"),
-    @NamedQuery(name = "Comment.findByCommentid", query = "SELECT c FROM Comment c WHERE c.commentid = :commentid"),
-    @NamedQuery(name = "Comment.findByCommentSubject", query = "SELECT c FROM Comment c WHERE c.commentSubject = :commentSubject"),
-    @NamedQuery(name = "Comment.findByCommentText", query = "SELECT c FROM Comment c WHERE c.commentText = :commentText"),
-    @NamedQuery(name = "Comment.findByDatecreated", query = "SELECT c FROM Comment c WHERE c.datecreated = :datecreated"),
-    @NamedQuery(name = "Comment.findByTimemodified", query = "SELECT c FROM Comment c WHERE c.timemodified = :timemodified"),
-    @NamedQuery(name = "Comment.findByExtradetails", query = "SELECT c FROM Comment c WHERE c.extradetails = :extradetails")})
+    @NamedQuery(name = "Comment.findAll", query = "SELECT c FROM Comment c")})
 public class Comment implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -60,19 +56,25 @@ public class Comment implements Serializable {
     @Basic(optional = false)
     @Column(name = "commentid")
     private Integer commentid;
+    @Size(max = 100)
     @Column(name = "commentSubject")
     private String commentSubject;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 1000)
     @Column(name = "commentText")
     private String commentText;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "datecreated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datecreated;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "timemodified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timemodified;
+    @Size(max = 500)
     @Column(name = "extradetails")
     private String extradetails;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "commentid", fetch = FetchType.LAZY)

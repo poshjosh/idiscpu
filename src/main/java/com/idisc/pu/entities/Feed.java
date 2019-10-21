@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,30 +36,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:37 PM
  */
 @Entity
 @Table(name = "feed")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Feed.findAll", query = "SELECT f FROM Feed f"),
-    @NamedQuery(name = "Feed.findByFeedid", query = "SELECT f FROM Feed f WHERE f.feedid = :feedid"),
-    @NamedQuery(name = "Feed.findByRawid", query = "SELECT f FROM Feed f WHERE f.rawid = :rawid"),
-    @NamedQuery(name = "Feed.findByUrl", query = "SELECT f FROM Feed f WHERE f.url = :url"),
-    @NamedQuery(name = "Feed.findByImageurl", query = "SELECT f FROM Feed f WHERE f.imageurl = :imageurl"),
-    @NamedQuery(name = "Feed.findByAuthor", query = "SELECT f FROM Feed f WHERE f.author = :author"),
-    @NamedQuery(name = "Feed.findByTitle", query = "SELECT f FROM Feed f WHERE f.title = :title"),
-    @NamedQuery(name = "Feed.findByKeywords", query = "SELECT f FROM Feed f WHERE f.keywords = :keywords"),
-    @NamedQuery(name = "Feed.findByCategories", query = "SELECT f FROM Feed f WHERE f.categories = :categories"),
-    @NamedQuery(name = "Feed.findByDescription", query = "SELECT f FROM Feed f WHERE f.description = :description"),
-    @NamedQuery(name = "Feed.findByFeeddate", query = "SELECT f FROM Feed f WHERE f.feeddate = :feeddate"),
-    @NamedQuery(name = "Feed.findByDatecreated", query = "SELECT f FROM Feed f WHERE f.datecreated = :datecreated"),
-    @NamedQuery(name = "Feed.findByTimemodified", query = "SELECT f FROM Feed f WHERE f.timemodified = :timemodified"),
-    @NamedQuery(name = "Feed.findByExtradetails", query = "SELECT f FROM Feed f WHERE f.extradetails = :extradetails")})
+    @NamedQuery(name = "Feed.findAll", query = "SELECT f FROM Feed f")})
 public class Feed implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -68,38 +57,52 @@ public class Feed implements Serializable {
     @Basic(optional = false)
     @Column(name = "feedid")
     private Integer feedid;
+    @Size(max = 100)
     @Column(name = "rawid")
     private String rawid;
+    @Size(max = 1000)
     @Column(name = "url")
     private String url;
+    @Size(max = 1000)
     @Column(name = "imageurl")
     private String imageurl;
+    @Size(max = 100)
     @Column(name = "author")
     private String author;
+    @Size(max = 500)
     @Column(name = "title")
     private String title;
+    @Size(max = 1000)
     @Column(name = "keywords")
     private String keywords;
+    @Size(max = 1000)
     @Column(name = "categories")
     private String categories;
+    @Size(max = 1000)
     @Column(name = "description")
     private String description;
     @Basic(optional = false)
+    @NotNull
     @Lob
+    @Size(min = 1, max = 65535)
     @Column(name = "content")
     private String content;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "feeddate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date feeddate;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "datecreated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datecreated;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "timemodified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timemodified;
+    @Size(max = 500)
     @Column(name = "extradetails")
     private String extradetails;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "feedid", fetch = FetchType.LAZY)

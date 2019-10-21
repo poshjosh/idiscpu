@@ -18,14 +18,13 @@ package com.idisc.pu;
 
 import com.bc.util.IntegerArray;
 import java.io.Serializable;
-import java.util.logging.Logger;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Aug 22, 2016 6:59:37 PM
  */
 public class IntDict implements Serializable, Cloneable {
     
-    private transient static final Logger LOG = Logger.getLogger(IntDict.class.getName());
+//    private transient static final Logger LOG = Logger.getLogger(IntDict.class.getName());
     
     private final IntegerArray keys;
     private final IntegerArray vals;

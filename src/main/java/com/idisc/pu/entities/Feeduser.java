@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,29 +34,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:38 PM
  */
 @Entity
 @Table(name = "feeduser")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Feeduser.findAll", query = "SELECT f FROM Feeduser f"),
-    @NamedQuery(name = "Feeduser.findByFeeduserid", query = "SELECT f FROM Feeduser f WHERE f.feeduserid = :feeduserid"),
-    @NamedQuery(name = "Feeduser.findByEmailAddress", query = "SELECT f FROM Feeduser f WHERE f.emailAddress = :emailAddress"),
-    @NamedQuery(name = "Feeduser.findByLastName", query = "SELECT f FROM Feeduser f WHERE f.lastName = :lastName"),
-    @NamedQuery(name = "Feeduser.findByFirstName", query = "SELECT f FROM Feeduser f WHERE f.firstName = :firstName"),
-    @NamedQuery(name = "Feeduser.findByDateOfBirth", query = "SELECT f FROM Feeduser f WHERE f.dateOfBirth = :dateOfBirth"),
-    @NamedQuery(name = "Feeduser.findByPhoneNumber1", query = "SELECT f FROM Feeduser f WHERE f.phoneNumber1 = :phoneNumber1"),
-    @NamedQuery(name = "Feeduser.findByPhoneNumber2", query = "SELECT f FROM Feeduser f WHERE f.phoneNumber2 = :phoneNumber2"),
-    @NamedQuery(name = "Feeduser.findByFax", query = "SELECT f FROM Feeduser f WHERE f.fax = :fax"),
-    @NamedQuery(name = "Feeduser.findByImage1", query = "SELECT f FROM Feeduser f WHERE f.image1 = :image1"),
-    @NamedQuery(name = "Feeduser.findByDatecreated", query = "SELECT f FROM Feeduser f WHERE f.datecreated = :datecreated"),
-    @NamedQuery(name = "Feeduser.findByTimemodified", query = "SELECT f FROM Feeduser f WHERE f.timemodified = :timemodified"),
-    @NamedQuery(name = "Feeduser.findByExtradetails", query = "SELECT f FROM Feeduser f WHERE f.extradetails = :extradetails")})
+    @NamedQuery(name = "Feeduser.findAll", query = "SELECT f FROM Feeduser f")})
 public class Feeduser implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -66,31 +56,43 @@ public class Feeduser implements Serializable {
     @Column(name = "feeduserid")
     private Integer feeduserid;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
     @Column(name = "emailAddress")
     private String emailAddress;
+    @Size(max = 100)
     @Column(name = "lastName")
     private String lastName;
+    @Size(max = 100)
     @Column(name = "firstName")
     private String firstName;
     @Column(name = "dateOfBirth")
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
+    @Size(max = 25)
     @Column(name = "phoneNumber1")
     private String phoneNumber1;
+    @Size(max = 25)
     @Column(name = "phoneNumber2")
     private String phoneNumber2;
+    // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$", message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//if the field contains phone or fax number consider using this annotation to enforce field validation
+    @Size(max = 25)
     @Column(name = "fax")
     private String fax;
+    @Size(max = 255)
     @Column(name = "image1")
     private String image1;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "datecreated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datecreated;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "timemodified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timemodified;
+    @Size(max = 500)
     @Column(name = "extradetails")
     private String extradetails;
     @JoinColumn(name = "gender", referencedColumnName = "genderid")

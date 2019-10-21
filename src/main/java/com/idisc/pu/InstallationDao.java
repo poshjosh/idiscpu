@@ -1,11 +1,10 @@
 package com.idisc.pu;
 
-import com.bc.jpa.context.JpaContext;
-import com.bc.jpa.context.PersistenceUnitContext;
+import com.bc.jpa.dao.JpaObjectFactory;
 import java.util.logging.Logger;
 import com.idisc.pu.entities.Country;
 import com.idisc.pu.entities.Installation;
-import com.idisc.pu.entities.Installation_;
+//import com.idisc.pu.entities.Installation_;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +13,11 @@ import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import com.bc.jpa.dao.Select;
+import com.idisc.pu.entities.Localaddress;
+import com.idisc.pu.entities.Location;
+import java.util.ArrayList;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 /**
  * @author Chinomso Bassey Ikwuagwu on Aug 13, 2016 9:47:40 AM
@@ -24,20 +28,73 @@ public class InstallationDao extends DaoBase {
     
   private static final AtomicInteger COUNT = new AtomicInteger();
   
-  private static final long TIMEOFFSET_MILLIS;
+  private static final long UID_TIMEOFFSET_MILLIS;
   static {
     Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     cal.set(2016, 0, 22);
-    TIMEOFFSET_MILLIS = cal.getTimeInMillis();
+    UID_TIMEOFFSET_MILLIS = cal.getTimeInMillis();
   }
   
-  public InstallationDao(JpaContext jpaContext) {
+  private static final long INSTL_TIMEOFFSET_MILLIS;
+  static {
+    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    cal.set(2009, 0, 1);
+    INSTL_TIMEOFFSET_MILLIS = cal.getTimeInMillis();
+  }
+
+  public InstallationDao(JpaObjectFactory jpaContext) {
     super(jpaContext);
   }
 
   public Installation from(
-          User user, Integer installationid, String installationkey, String screenname, 
+          User user, Integer installationid, String installationkey, String screenname, String ipaddress,  
           Country country, long firstinstallationtime, long lastinstallationtime, boolean createIfNone) {
+      
+    final Level level = Level.FINE;
+
+    LOG.log(level, "User: {0}", user);
+
+    Installation output;
+
+    try {
+        
+      output = this.from(user, null);  
+      
+      if(output == null) {
+        
+        output = this.from(installationid, installationkey, null);
+
+        if (output == null && createIfNone) {
+          
+          final List entities = this.create(user, installationid, installationkey, screenname, 
+              ipaddress, country, firstinstallationtime, lastinstallationtime);
+        
+          final EntityManager em = this.getJpaContext().getEntityManager();
+          try{
+            em.getTransaction().begin();
+            for(Object entity : entities) {
+              em.persist(entity);
+            }
+            this.getJpaContext().commit(em.getTransaction());
+          }finally{
+            em.close();
+          }
+          output = (Installation)entities.get(entities.size() - 1);
+//          this.getJpaContext().getDao().begin().persistAndClose(output);
+        }
+      }
+    } catch (RuntimeException e) {
+        
+      output = null;  
+      
+      LOG.log(Level.WARNING, "Unexpected exception. installationid: " 
+              + installationid+", installationkey: "+installationkey, e);
+    }
+    
+    return output;
+  }
+
+  public Installation from(User user, Installation outputIfNone) {
       
     Level level = Level.FINE;
 
@@ -45,7 +102,7 @@ public class InstallationDao extends DaoBase {
 
     Installation output;
     
-    final PersistenceUnitContext jpaContext = this.getJpaContext();
+    final JpaObjectFactory jpaContext = this.getJpaContext();
 
     if (user != null) {
 
@@ -55,9 +112,9 @@ public class InstallationDao extends DaoBase {
 
       if(list == null) {
 
-        try(Select<Installation> dao = jpaContext.getDaoForSelect(Installation.class)) {
+        try(Select<Installation> select = jpaContext.getDaoForSelect(Installation.class)) {
 
-          list = dao.where(Installation.class, Installation_.feeduserid.getName(), user.getDelegate())
+          list = select.where(Installation.class, "feeduserid", user.getDelegate())
               .createQuery().getResultList();
         }
         
@@ -77,77 +134,115 @@ public class InstallationDao extends DaoBase {
 
       if (list != null && !list.isEmpty()) {
 
-        return (Installation)list.get(list.size() - 1);
-      }
-    }
-
-    try {
-
-      final String installationkeyCol = Objects.requireNonNull(Installation_.installationkey.getName());
-      output = getEntity(Installation.class, installationkeyCol, installationkey, null);
-
-      if(LOG.isLoggable(level)) {
-        LOG.log(level, "For {0} = {1}, found: {2}", new Object[]{installationkeyCol, installationkey, output});
-      } 
-      if(output == null) {
-
-        output = jpaContext.getDao().findAndClose(Installation.class, installationid);
-
-        if(LOG.isLoggable(level)) {
-          LOG.log(level, "For {0} = {1}, found: {2}", 
-                  new Object[]{Installation_.installationid.getName(), installationid, output});
-        }
-      }
-
-      if ((output == null) && (createIfNone)) {
-
-        if (screenname != null && !screenname.isEmpty()) {
-
-          if (this.isExisting(Installation.class, Installation_.screenname.getName(), screenname)) {
-
-            screenname = generateUniqueId();
-          }
-        }else{
-
-          screenname = generateUniqueId();
-        }
-
-        output = new Installation();
-
-        output.setInstallationkey(installationkey);
-
-        output.setScreenname(screenname);
+        output = (Installation)list.get(list.size() - 1);
         
-        output.setCountryid(country);
-
-        if(firstinstallationtime < TIMEOFFSET_MILLIS) { throw new IllegalArgumentException(); }
-        output.setFirstinstallationdate(new Date(firstinstallationtime));
-
-        if(lastinstallationtime < TIMEOFFSET_MILLIS) { throw new IllegalArgumentException(); }
-        output.setLastinstallationdate(new Date(lastinstallationtime));
-
-        output.setDatecreated(new Date());
-
-        output.setFeeduserid(user == null ? null : user.getDelegate());
-        
-        jpaContext.getDao().begin().persistAndClose(output);
-
-        if(LOG.isLoggable(level)) {
-          LOG.log(level, "For: {0} = {1}, created: ", 
-                  new Object[]{installationkeyCol, installationkey, output});
-        }
+      }else{
+          
+        output = null;
       }
-    } catch (RuntimeException e) {
+    }else{
+        
       output = null;  
-      LOG.log(Level.WARNING, "Error accessing database installation record for installationid: " 
-              + installationid+", installationkey: "+installationkey, e);
     }
     
-    return output;
+    return output == null ? outputIfNone : output;
+  }
+
+  public Installation from(Integer installationid, String installationkey, Installation outputIfNone) {
+      
+    Installation output;
+    
+    if((installationid != null && installationid > -1) || installationkey != null) {
+        
+      try(final Select<Installation> select = this.getJpaContext().getDaoForSelect(Installation.class)) {
+
+        if(installationid != null && installationid > -1) {
+          select.where("installationid", installationid).or();
+        }
+        
+        if(installationkey != null) {
+          select.where("installationkey", installationkey).or();
+        }
+
+        output = select.getSingleResultAndClose();
+        
+      }catch(NoResultException e) {
+        output = null;  
+      }
+    }else{
+      output = null;  
+    }
+    
+    return output == null ? outputIfNone : output;
   }
   
+  public List create(
+          User user, Integer installationid, String installationkey, String screenname,
+          String ipaddress, Country country, long firstinstallationtime, long lastinstallationtime) {
+
+    LOG.log(Level.FINE, "User: {0}", user);
+
+    Objects.requireNonNull(installationkey);
+
+    if (screenname != null && !screenname.isEmpty()) {
+
+      if (this.isExisting(Installation.class, "screenname", screenname)) {
+
+        screenname = generateUniqueId();
+      }
+    }else{
+
+      screenname = generateUniqueId();
+    }
+
+    final List result = new ArrayList(4);
+    
+    final Date now = new Date();
+    
+    final Installation installation = new Installation();
+
+    installation.setInstallationkey(installationkey);
+
+    installation.setScreenname(screenname);
+    
+    installation.setIpaddress(ipaddress);
+
+    if(country != null) {
+      
+      final Localaddress localaddress = new Localaddress();
+      localaddress.setDatecreated(now);
+      localaddress.setCountry(country);
+      result.add(localaddress);
+      
+      final Location location = new Location();
+      location.setDatecreated(now);
+      location.setLocaladdress(localaddress);
+      result.add(location);
+    }
+    
+    result.add(installation);
+
+//        if(firstinstallationtime < INSTL_TIMEOFFSET_MILLIS) { throw new IllegalArgumentException(); }
+    if(firstinstallationtime > INSTL_TIMEOFFSET_MILLIS) {
+      installation.setFirstinstallationdate(new Date(firstinstallationtime));
+    }
+//        if(lastinstallationtime < INSTL_TIMEOFFSET_MILLIS) { throw new IllegalArgumentException(); }
+    if(lastinstallationtime > INSTL_TIMEOFFSET_MILLIS) {
+      installation.setLastinstallationdate(new Date(lastinstallationtime));
+    }
+    installation.setDatecreated(now);
+
+    installation.setFeeduserid(user == null ? null : user.getDelegate());
+
+    if(LOG.isLoggable(Level.FINE)) {
+      LOG.log(Level.FINE, "For: installationkey = {0}, created: {1}", new Object[]{installationkey, installation});
+    }
+    
+    return result;
+  }
+
   private String generateUniqueId() {
-    long n = System.currentTimeMillis() - TIMEOFFSET_MILLIS;
+    long n = System.currentTimeMillis() - UID_TIMEOFFSET_MILLIS;
     return "user_" + Long.toHexString(n) + "_" + COUNT.getAndIncrement();
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,18 +32,17 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:02 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:37 PM
  */
 @Entity
 @Table(name = "favoritefeed")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Favoritefeed.findAll", query = "SELECT f FROM Favoritefeed f"),
-    @NamedQuery(name = "Favoritefeed.findByFavoritefeedid", query = "SELECT f FROM Favoritefeed f WHERE f.favoritefeedid = :favoritefeedid"),
-    @NamedQuery(name = "Favoritefeed.findByDatecreated", query = "SELECT f FROM Favoritefeed f WHERE f.datecreated = :datecreated")})
+    @NamedQuery(name = "Favoritefeed.findAll", query = "SELECT f FROM Favoritefeed f")})
 public class Favoritefeed implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,6 +52,7 @@ public class Favoritefeed implements Serializable {
     @Column(name = "favoritefeedid")
     private Integer favoritefeedid;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "datecreated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datecreated;

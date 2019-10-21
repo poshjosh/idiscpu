@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,21 +32,18 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:02 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:37 PM
  */
 @Entity
 @Table(name = "commentreplynotice")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Commentreplynotice.findAll", query = "SELECT c FROM Commentreplynotice c"),
-    @NamedQuery(name = "Commentreplynotice.findByCommentreplynoticeid", query = "SELECT c FROM Commentreplynotice c WHERE c.commentreplynoticeid = :commentreplynoticeid"),
-    @NamedQuery(name = "Commentreplynotice.findByDateusernotified", query = "SELECT c FROM Commentreplynotice c WHERE c.dateusernotified = :dateusernotified"),
-    @NamedQuery(name = "Commentreplynotice.findByDateuserread", query = "SELECT c FROM Commentreplynotice c WHERE c.dateuserread = :dateuserread"),
-    @NamedQuery(name = "Commentreplynotice.findByTimemodified", query = "SELECT c FROM Commentreplynotice c WHERE c.timemodified = :timemodified"),
-    @NamedQuery(name = "Commentreplynotice.findByExtradetails", query = "SELECT c FROM Commentreplynotice c WHERE c.extradetails = :extradetails")})
+    @NamedQuery(name = "Commentreplynotice.findAll", query = "SELECT c FROM Commentreplynotice c")})
 public class Commentreplynotice implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -56,6 +53,7 @@ public class Commentreplynotice implements Serializable {
     @Column(name = "commentreplynoticeid")
     private Integer commentreplynoticeid;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "dateusernotified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateusernotified;
@@ -63,9 +61,11 @@ public class Commentreplynotice implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateuserread;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "timemodified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timemodified;
+    @Size(max = 500)
     @Column(name = "extradetails")
     private String extradetails;
     @JoinColumn(name = "commentid", referencedColumnName = "commentid")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,23 +35,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:38 PM
  */
 @Entity
 @Table(name = "site")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Site.findAll", query = "SELECT s FROM Site s"),
-    @NamedQuery(name = "Site.findBySiteid", query = "SELECT s FROM Site s WHERE s.siteid = :siteid"),
-    @NamedQuery(name = "Site.findBySite", query = "SELECT s FROM Site s WHERE s.site = :site"),
-    @NamedQuery(name = "Site.findByIconurl", query = "SELECT s FROM Site s WHERE s.iconurl = :iconurl"),
-    @NamedQuery(name = "Site.findByDatecreated", query = "SELECT s FROM Site s WHERE s.datecreated = :datecreated"),
-    @NamedQuery(name = "Site.findByTimemodified", query = "SELECT s FROM Site s WHERE s.timemodified = :timemodified"),
-    @NamedQuery(name = "Site.findByExtradetails", query = "SELECT s FROM Site s WHERE s.extradetails = :extradetails")})
+    @NamedQuery(name = "Site.findAll", query = "SELECT s FROM Site s")})
 public class Site implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -61,18 +57,24 @@ public class Site implements Serializable {
     @Column(name = "siteid")
     private Integer siteid;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
     @Column(name = "site")
     private String site;
+    @Size(max = 500)
     @Column(name = "iconurl")
     private String iconurl;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "datecreated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datecreated;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "timemodified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timemodified;
+    @Size(max = 500)
     @Column(name = "extradetails")
     private String extradetails;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "siteid", fetch = FetchType.LAZY)

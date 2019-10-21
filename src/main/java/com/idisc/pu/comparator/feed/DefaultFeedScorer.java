@@ -28,13 +28,30 @@ public class DefaultFeedScorer implements Scorer<Feed>{
     @Override
     public Long apply(Feed feed) {
         
-        long score = this.countFeedHits(feed);
+        long score = 0;
+        
+        score = this.addFeedhitScore(feed, score);
+        
+        score = this.addImageUrlScore(feed, score);
+        
+        return score;
+    }
+    
+    public long addFeedhitScore(Feed feed, long score) {
+        return score + this.getFeedhitScore(feed);
+    }
+    
+    public int getFeedhitScore(Feed feed) {
+        return this.countFeedHits(feed);
+    }
+    
+    public long addImageUrlScore(Feed feed, long score) {
         
         String imageUrl = feed.getImageurl();
         
         if(imageUrl != null) {
             
-            score = score < 1 ? 1 : (long)(score * 1.5);
+            score = score < 1 ? 1 : (long)(score * 2);
         }
         
         return score;

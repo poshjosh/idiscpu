@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
@@ -65,9 +66,17 @@ public class FeedScoreUserSiteHitcount extends DefaultFeedScorer implements Auto
     this(entityManager, 
             installation, 
             Collections.EMPTY_MAP,
-            900_000, // 15 minutes in millis, i.e 15 * 60 * 1000; 
-            2_880); // 2 days in minutes, i.e 48 * 60
+            TimeUnit.MINUTES.toMillis(15),
+            TimeUnit.DAYS.toMinutes(2)); // 
   }  
+  
+  public FeedScoreUserSiteHitcount(
+          EntityManager entityManager,
+          Map<Pattern, Integer> elite,
+          long valueToAddPerHit,
+          long maxPossibleValueToAddPerHit) { 
+    this(entityManager, null, elite, valueToAddPerHit, maxPossibleValueToAddPerHit);
+  }
   
   public FeedScoreUserSiteHitcount(
           EntityManager entityManager,
@@ -104,21 +113,30 @@ public class FeedScoreUserSiteHitcount extends DefaultFeedScorer implements Auto
   @Override
   public Long apply(Feed feed) {
       
-    long score = feed.getFeeddate() == null ? 0L : feed.getFeeddate().getTime();
+    long score = 0;
     
-    score += getAddedValueTime(feed);
+    score = this.addFeeddateScore(feed, score);
     
-    String imageUrl = feed.getImageurl();
-
-    if(imageUrl != null) {
-
-      score = score * 2;
-    }
+    score = this.addAddedTimeScore(feed, score);
+    
+    score = this.addImageUrlScore(feed, score);
     
     return score;
   }
   
-  protected long getAddedValueTime(Feed feed) {
+  public long addFeeddateScore(Feed feed, long score) {
+    return score + this.getFeedateScore(feed);
+  }
+  
+  public long getFeedateScore(Feed feed) {
+    return feed.getFeeddate() == null ? 0L : feed.getFeeddate().getTime();
+  }
+  
+  public long addAddedTimeScore(Feed feed, long score) {
+    return score + getAddedTimeValue(feed);
+  }
+  
+  public long getAddedTimeValue(Feed feed) {
 
     long output = this.getAddedValueForFeedhits(feed);
     

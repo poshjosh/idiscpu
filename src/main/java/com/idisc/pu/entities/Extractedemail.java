@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,22 +32,18 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:37 PM
  */
 @Entity
 @Table(name = "extractedemail")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Extractedemail.findAll", query = "SELECT e FROM Extractedemail e"),
-    @NamedQuery(name = "Extractedemail.findByExtractedemailid", query = "SELECT e FROM Extractedemail e WHERE e.extractedemailid = :extractedemailid"),
-    @NamedQuery(name = "Extractedemail.findByEmailAddress", query = "SELECT e FROM Extractedemail e WHERE e.emailAddress = :emailAddress"),
-    @NamedQuery(name = "Extractedemail.findByUsername", query = "SELECT e FROM Extractedemail e WHERE e.username = :username"),
-    @NamedQuery(name = "Extractedemail.findByDatecreated", query = "SELECT e FROM Extractedemail e WHERE e.datecreated = :datecreated"),
-    @NamedQuery(name = "Extractedemail.findByTimemodified", query = "SELECT e FROM Extractedemail e WHERE e.timemodified = :timemodified"),
-    @NamedQuery(name = "Extractedemail.findByExtradetails", query = "SELECT e FROM Extractedemail e WHERE e.extradetails = :extradetails")})
+    @NamedQuery(name = "Extractedemail.findAll", query = "SELECT e FROM Extractedemail e")})
 public class Extractedemail implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -57,18 +53,24 @@ public class Extractedemail implements Serializable {
     @Column(name = "extractedemailid")
     private Integer extractedemailid;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
     @Column(name = "emailAddress")
     private String emailAddress;
+    @Size(max = 100)
     @Column(name = "username")
     private String username;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "datecreated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datecreated;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "timemodified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timemodified;
+    @Size(max = 500)
     @Column(name = "extradetails")
     private String extradetails;
     @JoinColumn(name = "installationid", referencedColumnName = "installationid")

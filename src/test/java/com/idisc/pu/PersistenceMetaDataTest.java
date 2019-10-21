@@ -1,15 +1,18 @@
 package com.idisc.pu;
 
-import com.idisc.pu.entities.Feed;
-import com.idisc.pu.entities.Emailstatus;
+import com.bc.jpa.dao.util.EntityReference;
 import java.io.IOException;
 import java.util.Map;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import com.bc.jpa.context.JpaContext;
-import com.bc.jpa.metadata.JpaMetaData;
+import com.bc.jpa.context.PersistenceContext;
+import com.bc.jpa.context.PersistenceUnitContext;
+import com.bc.jpa.metadata.PersistenceMetaData;
+import com.bc.jpa.metadata.PersistenceUnitMetaData;
+import com.bc.node.NodeFormat;
+import com.idisc.pu.entities.Applaunchlog;
+import java.util.Arrays;
 import java.util.Set;
+import javax.persistence.EntityManager;
 
 
 /**
@@ -27,22 +30,35 @@ import java.util.Set;
  */
 public class PersistenceMetaDataTest extends TestStub {
     
-    private final JpaContext jpaContext;
+    private final PersistenceContext jpaContext;
     
-    private final JpaMetaData metaData;
+    private final PersistenceUnitContext puContext;
+    
+    private final PersistenceMetaData metaData;
     
     public PersistenceMetaDataTest() throws IOException { 
-        this.jpaContext = new IdiscJpaContext();
+        this.jpaContext = this.getPersistenceContextDevMode();
+        this.puContext = this.jpaContext.getContext(com.idisc.pu.PersistenceNames.PERSISTENCE_UNIT_NAME);
         this.metaData = jpaContext.getMetaData();
-        jpaContext.getEntityManager(Feed.class);
-        jpaContext.getEntityManager(Emailstatus.class);
     }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {  }
+    @Test
+    public void testGetTableName() throws Exception {
+        
+        Set<String> puNames = metaData.getPersistenceUnitNames();
+        System.out.println("Persistence units: " + puNames);
+        
+        final PersistenceUnitMetaData puMeta = metaData.getMetaData(com.idisc.pu.PersistenceNames.PERSISTENCE_UNIT_NAME);
+        
+        System.out.println(new NodeFormat().format(puMeta));
 
-    @AfterClass
-    public static void tearDownClass() throws Exception { }
+        final Class entityClass = Applaunchlog.class;
+        final String table = puMeta.getTableName(entityClass);
+        System.out.println("Entity class: " + entityClass.getSimpleName() + ", table: " + table);
+        
+        final Class etityClass = puMeta.getEntityClass(table);
+        System.out.println("Table: " + table + ", entity class: " + entityClass.getSimpleName());
+    }
     
     @Test
     public void testGetReference() throws Exception {
@@ -51,15 +67,26 @@ long mb4 = com.bc.util.Util.availableMemory();
 
         Set<String> puNames = metaData.getPersistenceUnitNames();
         
+        final Class entityClass = Applaunchlog.class;
+        final String table = metaData.getMetaData(com.idisc.pu.PersistenceNames.PERSISTENCE_UNIT_NAME).getTableName(entityClass);
+        System.out.println("Entity class: " + entityClass.getSimpleName() + ", table: " + table);
+        
+        final Class etityClass = metaData.getMetaData(com.idisc.pu.PersistenceNames.PERSISTENCE_UNIT_NAME).getEntityClass(table);
+        System.out.println("Table: " + table + ", entity class: " + entityClass.getSimpleName());
+        
         for(String puName:puNames) {
             
             Set<Class> classes = metaData.getEntityClasses(puName);
             
             for(Class aClass:classes) {
-System.out.println("Class: "+aClass.getName());                
-                this.testGetReference(aClass, "gender", (short)2);
-                this.testGetReference(aClass, "userstatus", (short)4);
-//                this.testGetReference(aClass, "howdidyoufindus", (short)5);
+System.out.println("Class: "+aClass.getName());   
+                this.testGetReference(aClass, "gender", (short)1);
+                this.testGetReference(aClass, "userstatus", (short)1);
+                this.testGetReference(aClass, "howdidyoufindus", (short)1);
+                this.testGetReference(aClass, "country", (short)1);
+                this.testGetReference(aClass, "emailstatus", (short)1);
+                this.testGetReference(aClass, "sitetype", (short)1);
+                this.testGetReference(aClass, "timezone", (short)1);
             }
         }
         
@@ -71,9 +98,12 @@ System.out.println("TOTAL, Time: "+(System.currentTimeMillis()-tB4)+", Memory: "
         Object a = this.getReferenceA(aClass, col, val);
         Object b = this.getReferenceB(aClass, col, val);
         
-System.out.println(metaData.getTableName(aClass)+"."+col+"="+val);        
+        final String tableName = this.puContext.getMetaData().getTableName(aClass);
+System.out.println(tableName+"."+col+"="+val); 
+        if(a != null || b != null) {
 System.out.println("getReferenceA: "+a+",   getReferenceB: "+b);
 System.out.println();
+        }
     }
 
     private Object getReferenceA(Class aClass, String col, Object val) 
@@ -82,14 +112,19 @@ System.out.println();
         if(val == null) {
             return null;
         }
+        
+        final EntityReference entityReference = puContext.getEntityReference();
 
-        Class [] refTypes = metaData.getReferenceClasses(aClass);
+        Class [] refTypes = entityReference.getReferenceClasses(aClass);
+        System.out.println(aClass.getSimpleName() + ", ref classes: " +
+                (refTypes==null?null:Arrays.toString(refTypes)));
         
         if(refTypes == null || refTypes.length == 0) {
             return null;
         }
 
-        Map<String, String> references = metaData.getReferences(aClass);    
+        Map<String, String> references = entityReference.getReferences(aClass);    
+        System.out.println(aClass.getSimpleName() + ", refs: " + references);
         
         final Class valueType = val.getClass();
         
@@ -106,14 +141,28 @@ System.out.println();
                 break;
             }
   
-            String crossRefColumn = metaData.getReferenceColumn(refType, aClass);
+            String crossRefColumn = entityReference.getReferenceColumn(refType, aClass);
+            System.out.println("Ref type: " + refType.getSimpleName() +
+                    ", refing type: " + aClass.getSimpleName() + 
+                    ", cross ref column: " + crossRefColumn);
             
             if(crossRefColumn != null && crossRefColumn.equals(references.get(col))) {
 
-                ref = jpaContext.getEntityManager(refType).getReference(refType, val);
+                try{
+                    final EntityManager em = puContext.getEntityManager();
+                    try{
+                        ref = em.getReference(refType, val);
+                    }finally{
+                        if(em.isOpen()) {
+                            em.close();
+                        }
+                    }
 
-                if(ref == null) {
-                    throw new NullPointerException();
+                    if(ref == null) {
+                        throw new NullPointerException();
+                    }
+                }catch(javax.persistence.EntityNotFoundException e) {
+                    System.err.println(e);
                 }
                 
                 break;
@@ -132,8 +181,10 @@ System.out.println();
         if(val == null) {
             return null;
         }
+        
+        final EntityReference entityReference = this.puContext.getEntityReference();
 
-        Class refType = metaData.getReferenceClass(aClass, col);
+        Class refType = entityReference.getReferenceClass(aClass, col);
         
         if(refType == null) {
             return null;
@@ -143,16 +194,27 @@ System.out.println();
             return null;
         }
         
-        String crossRefColumn = metaData.getReferenceColumn(refType, aClass);
+        String crossRefColumn = entityReference.getReferenceColumn(refType, aClass);
 
         Object ref;
         
         if(crossRefColumn != null) {
 
-            ref = jpaContext.getEntityManager(refType).getReference(refType, val);
-
-            if(ref == null) {
-                throw new NullPointerException();
+            try{
+                final EntityManager em = puContext.getEntityManager();
+                try{
+                    ref = em.getReference(refType, val);
+                }finally{
+                    if(em.isOpen()) {
+                        em.close();
+                    }
+                }
+                if(ref == null) {
+                    throw new NullPointerException();
+                }
+            }catch(javax.persistence.EntityNotFoundException e) {
+                ref = null;
+                System.err.println(e);
             }
 
         }else{
@@ -174,35 +236,35 @@ long mb4 = com.bc.util.Util.availableMemory();
 
         Set<String> puNames = metaData.getPersistenceUnitNames();
         
-        for(String puName:puNames) {
+        for(String puName : puNames) {
             
             Set<Class> classes = metaData.getEntityClasses(puName);
             
             for(Class aClass:classes) {
                 
-                this.test(metaData, aClass);
+                this.test(metaData.getMetaData(puName), aClass);
             }
         }
         
 System.out.println("TOTAL, Time: "+(System.currentTimeMillis()-tB4)+", Memory: "+(mb4-com.bc.util.Util.usedMemory(mb4)));
     }
     
-    private void test(JpaMetaData metaData, Class aClass) throws IOException {
+    private void test(PersistenceUnitMetaData metaData, Class aClass) throws IOException {
 
         try{
 
 long tB4 = System.currentTimeMillis();
 long mb4 = com.bc.util.Util.availableMemory();
 
-            Set<String> puNames = metaData.getPersistenceUnitNames();
+            final String puName = metaData.getName();
             
-            String databaseName = metaData.getDatabaseName(aClass);
+            final String databaseName = metaData.getDatabaseName(aClass);
             
-            String tableName = metaData.getTableName(aClass);
+            final String tableName = metaData.getTableName(aClass);
 
-            String idColumn = metaData.getIdColumnName(aClass);
+            final String idColumn = metaData.getIdColumnName(aClass);
 
-log("Class:"+aClass+", persistence-units:"+puNames+", database:"+databaseName+", table:"+tableName+", idColumn:"+idColumn);            
+log("Class:"+aClass+", persistence-units:"+puName+", database:"+databaseName+", table:"+tableName+", idColumn:"+idColumn);            
             Class cls = metaData.getEntityClass(databaseName, null, tableName);
 
 System.out.println("Time: "+(System.currentTimeMillis()-tB4)+", Memory: "+(mb4-com.bc.util.Util.usedMemory(mb4)));

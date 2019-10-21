@@ -18,6 +18,7 @@ package com.idisc.pu;
 
 import java.util.logging.Logger;
 import com.idisc.pu.entities.Feed;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,17 +30,13 @@ import java.util.logging.Level;
 /**
  * @author Chinomso Bassey Ikwuagwu on Aug 22, 2016 4:23:49 PM
  */
-public class SpreadBySite {
+public class SpreadFeedBySite implements Spreader<Feed>, Serializable {
     
-  private transient static final Logger LOG = Logger.getLogger(SpreadBySite.class.getName());
+  private transient static final Logger LOG = Logger.getLogger(SpreadFeedBySite.class.getName());
     
-  public SpreadBySite() { }
+  public SpreadFeedBySite() { }
 
-  public List<Feed> spread(List<Feed> feeds) {
-   
-    return this.spread(feeds, feeds.size());
-  }
-  
+  @Override
   public List<Feed> spread(List<Feed> feeds, int outputSize) {
   
     return this.spread(feeds, outputSize, 1);

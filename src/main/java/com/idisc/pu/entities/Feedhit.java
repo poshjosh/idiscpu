@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,18 +32,17 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:37 PM
  */
 @Entity
 @Table(name = "feedhit")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Feedhit.findAll", query = "SELECT f FROM Feedhit f"),
-    @NamedQuery(name = "Feedhit.findByFeedhitid", query = "SELECT f FROM Feedhit f WHERE f.feedhitid = :feedhitid"),
-    @NamedQuery(name = "Feedhit.findByHittime", query = "SELECT f FROM Feedhit f WHERE f.hittime = :hittime")})
+    @NamedQuery(name = "Feedhit.findAll", query = "SELECT f FROM Feedhit f")})
 public class Feedhit implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,6 +52,7 @@ public class Feedhit implements Serializable {
     @Column(name = "feedhitid")
     private Integer feedhitid;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "hittime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date hittime;

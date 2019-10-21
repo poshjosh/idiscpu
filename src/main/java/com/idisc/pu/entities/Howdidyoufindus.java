@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,27 +27,30 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:38 PM
  */
 @Entity
 @Table(name = "howdidyoufindus")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Howdidyoufindus.findAll", query = "SELECT h FROM Howdidyoufindus h"),
-    @NamedQuery(name = "Howdidyoufindus.findByHowdidyoufindusid", query = "SELECT h FROM Howdidyoufindus h WHERE h.howdidyoufindusid = :howdidyoufindusid"),
-    @NamedQuery(name = "Howdidyoufindus.findByHowdidyoufindus", query = "SELECT h FROM Howdidyoufindus h WHERE h.howdidyoufindus = :howdidyoufindus")})
+    @NamedQuery(name = "Howdidyoufindus.findAll", query = "SELECT h FROM Howdidyoufindus h")})
 public class Howdidyoufindus implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
+    @NotNull
     @Column(name = "howdidyoufindusid")
     private Short howdidyoufindusid;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 40)
     @Column(name = "howdidyoufindus")
     private String howdidyoufindus;
     @OneToMany(mappedBy = "howDidYouFindUs", fetch = FetchType.LAZY)

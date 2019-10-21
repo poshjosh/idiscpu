@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,27 +28,30 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:37 PM
  */
 @Entity
 @Table(name = "sitetype")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Sitetype.findAll", query = "SELECT s FROM Sitetype s"),
-    @NamedQuery(name = "Sitetype.findBySitetypeid", query = "SELECT s FROM Sitetype s WHERE s.sitetypeid = :sitetypeid"),
-    @NamedQuery(name = "Sitetype.findBySitetype", query = "SELECT s FROM Sitetype s WHERE s.sitetype = :sitetype")})
+    @NamedQuery(name = "Sitetype.findAll", query = "SELECT s FROM Sitetype s")})
 public class Sitetype implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
+    @NotNull
     @Column(name = "sitetypeid")
     private Short sitetypeid;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 10)
     @Column(name = "sitetype")
     private String sitetype;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sitetypeid", fetch = FetchType.LAZY)

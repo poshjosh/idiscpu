@@ -17,9 +17,9 @@
 package com.idisc.pu;
 
 import com.bc.jpa.context.PersistenceContext;
-import com.bc.jpa.context.PersistenceContextEclipselinkOptimized;
-import com.bc.jpa.search.SearchResults;
-import com.bc.sql.MySQLDateTimePatterns;
+import com.bc.jpa.context.eclipselink.PersistenceContextEclipselinkOptimized;
+import com.bc.jpa.dao.search.SearchResults;
+import com.bc.jpa.dao.sql.MySQLDateTimePatterns;
 import com.idisc.pu.entities.Feed;
 import java.util.List;
 
@@ -33,11 +33,22 @@ public class PersistenceUnitContextTest {
         final PersistenceContext ctx = new PersistenceContextEclipselinkOptimized(
                 new MySQLDateTimePatterns(), Feed.class
         );
-        final SearchResults<Feed> results = ctx.getDao("idiscpu").search(Feed.class, 20);
-        System.out.println("Found: " + results.getSize() + " results");
-        final List<Feed> firstPage = results.getPage(0);
-        for(Feed feed : firstPage) {
-            System.out.println(feed.getFeedid() + ", site: " + feed.getSiteid().getSite() + ", title: " + feed.getTitle());
+        final SearchResults<Feed> results = ctx.getContext(com.idisc.pu.PersistenceNames.PERSISTENCE_UNIT_NAME)
+                .getDaoForSelect(Feed.class).search(Feed.class, 20);
+        try{
+            System.out.println("Found: " + results.getSize() + " results");
+            final List<Feed> firstPage = results.getPage(0);
+            for(Feed feed : firstPage) {
+                System.out.println(feed.getFeedid() + ", site: " + feed.getSiteid().getSite() + ", title: " + feed.getTitle());
+            }
+        }finally{
+            if(results instanceof AutoCloseable) {
+                try{
+                    ((AutoCloseable) results).close();
+                }catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

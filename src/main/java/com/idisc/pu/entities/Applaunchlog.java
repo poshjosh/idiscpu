@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 NUROX Ltd.
+ * Copyright 2018 NUROX Ltd.
  *
  * Licensed under the NUROX Ltd Software License (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,18 +32,17 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Chinomso Bassey Ikwuagwu on Feb 5, 2017 10:52:03 PM
+ * @author Chinomso Bassey Ikwuagwu on Nov 3, 2018 1:26:38 PM
  */
 @Entity
 @Table(name = "applaunchlog")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Applaunchlog.findAll", query = "SELECT a FROM Applaunchlog a"),
-    @NamedQuery(name = "Applaunchlog.findByApplaunchlogid", query = "SELECT a FROM Applaunchlog a WHERE a.applaunchlogid = :applaunchlogid"),
-    @NamedQuery(name = "Applaunchlog.findByLaunchtime", query = "SELECT a FROM Applaunchlog a WHERE a.launchtime = :launchtime")})
+    @NamedQuery(name = "Applaunchlog.findAll", query = "SELECT a FROM Applaunchlog a")})
 public class Applaunchlog implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,6 +52,7 @@ public class Applaunchlog implements Serializable {
     @Column(name = "applaunchlogid")
     private Integer applaunchlogid;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "launchtime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date launchtime;

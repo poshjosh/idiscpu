@@ -1,9 +1,10 @@
-package com.idisc.pu;
+package com.idisc.pu.deprecated;
 
 import com.bc.jpa.context.JpaContextImpl;
 import com.bc.jpa.util.PersistenceURISelector;
-import com.bc.sql.MySQLDateTimePatterns;
-import com.bc.sql.SQLDateTimePatterns;
+import com.bc.jpa.dao.sql.MySQLDateTimePatterns;
+import com.bc.jpa.dao.sql.SQLDateTimePatterns;
+import com.idisc.pu.References;
 import java.util.logging.Logger;
 import java.io.File;
 import java.io.IOException;
